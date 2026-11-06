@@ -142,8 +142,8 @@ export default function ReportPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* 1. Report type */}
-        <fieldset className="card p-4 sm:p-5">
-          <legend className="mb-3 text-sm font-bold text-slate-800">1. What type of hazard did you observe?</legend>
+        <div className="card p-4 sm:p-5">
+          <h2 className="mb-3 text-sm font-bold text-slate-800">1. What type of hazard did you observe?</h2>
           <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
             {reportTypes.map((rt) => (
               <button
@@ -164,11 +164,11 @@ export default function ReportPage() {
               </button>
             ))}
           </div>
-        </fieldset>
+        </div>
 
         {/* 2. Severity */}
-        <fieldset className="card p-4 sm:p-5">
-          <legend className="mb-3 text-sm font-bold text-slate-800">2. Water depth / Hazard severity</legend>
+        <div className="card p-4 sm:p-5">
+          <h2 className="mb-3 text-sm font-bold text-slate-800">2. Water depth / Hazard severity</h2>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="flex flex-1 gap-1.5" role="group" aria-label="Severity rating 1 to 5">
               {[1, 2, 3, 4, 5].map((level) => (
@@ -196,13 +196,13 @@ export default function ReportPage() {
               </span>
             </div>
           </div>
-        </fieldset>
+        </div>
 
         {/* 3. Location Picker */}
-        <fieldset className="card p-4 sm:p-5 space-y-3">
+        <div className="card p-4 sm:p-5 space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <legend className="text-sm font-bold text-slate-800">3. Where is this hazard located?</legend>
+              <h2 className="text-sm font-bold text-slate-800">3. Where is this hazard located?</h2>
               <p className="text-xs text-slate-500">Search any Pune locality, click a quick button, or tap directly on the map.</p>
             </div>
             <button
@@ -306,10 +306,10 @@ export default function ReportPage() {
               Tap anywhere on the map above or pick a quick location to place the pin.
             </p>
           )}
-        </fieldset>
+        </div>
 
         {/* 4. Description */}
-        <fieldset className="card p-4 sm:p-5">
+        <div className="card p-4 sm:p-5">
           <label htmlFor="report-desc" className="mb-2 block text-sm font-bold text-slate-800">
             4. Details / Landmark description (optional)
           </label>
@@ -323,7 +323,7 @@ export default function ReportPage() {
             className="input-field resize-none text-xs"
           />
           <div className="mt-1 text-right text-[10px] text-slate-400">{description.length}/500</div>
-        </fieldset>
+        </div>
 
         {/* Submit button */}
         <button

@@ -13,12 +13,6 @@ export default function MunicipalLoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  function fillCredentials(fillEmail: string, fillPass: string) {
-    setEmail(fillEmail);
-    setPassword(fillPass);
-    toast.info(`Filled credentials for ${fillEmail}`);
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email || !password) {
@@ -39,7 +33,7 @@ export default function MunicipalLoginPage() {
   }
 
   return (
-    <main className="flex min-h-[85vh] items-center justify-center px-4 py-8">
+    <div className="flex min-h-[85vh] items-center justify-center px-4 py-8">
       <div className="relative w-full max-w-md">
         {/* Background glow */}
         <div className="absolute -inset-4 -z-10 rounded-3xl opacity-30 blur-3xl" style={{ background: "var(--gradient-hero)" }} />
@@ -57,16 +51,7 @@ export default function MunicipalLoginPage() {
             </div>
             <h1 className="mt-4 text-xl font-extrabold text-slate-900">Municipal Staff Portal</h1>
             <p className="mt-1 text-center text-sm text-slate-500">
-              PMC &amp; Disaster Management Operational Dashboard
-            </p>
-          </div>
-
-          <div className="mt-5 rounded-xl border border-sky-200 bg-sky-50/70 p-3 text-xs text-sky-800">
-            <div className="flex items-center gap-1.5 font-semibold">
-              <span>🔒</span> Pre-Configured Staff Accounts
-            </div>
-            <p className="mt-1 text-slate-600">
-              Municipal employee accounts are pre-seeded in the database to prevent public unauthorized access. No manual registration needed.
+              Sign in to manage flood reports &amp; work orders
             </p>
           </div>
 
@@ -105,36 +90,17 @@ export default function MunicipalLoginPage() {
               id="municipal-login-btn"
               type="submit"
             >
-              {loading ? <span className="animate-pulse-subtle">Signing In…</span> : "Sign In to Portal"}
+              {loading ? <span className="animate-pulse-subtle">Signing In…</span> : "Sign In"}
             </button>
           </form>
 
-          {/* 1-Click Quick Fill Buttons */}
-          <div className="mt-6 border-t border-slate-200/80 pt-4">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
-              Quick 1-Click Demo Login
+          <div className="mt-6 rounded-xl bg-slate-50 border border-slate-200/60 p-3 text-center">
+            <p className="text-xs text-slate-500">
+              Authorized municipal accounts only. Public registration is restricted for security.
             </p>
-            <div className="flex flex-col gap-2">
-              <button
-                type="button"
-                onClick={() => fillCredentials("staff@pune.gov.in", "change-before-deployment")}
-                className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 shadow-sm transition hover:border-sky-300 hover:bg-sky-50 hover:text-sky-900"
-              >
-                <span>⚡ Fill <b>staff@pune.gov.in</b></span>
-                <span className="text-[11px] text-slate-400">Default Staff</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => fillCredentials("khushidudhalkar@gmail.com", "change-before-deployment")}
-                className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 shadow-sm transition hover:border-sky-300 hover:bg-sky-50 hover:text-sky-900"
-              >
-                <span>⚡ Fill <b>khushidudhalkar@gmail.com</b></span>
-                <span className="text-[11px] text-slate-400">Admin Staff</span>
-              </button>
-            </div>
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

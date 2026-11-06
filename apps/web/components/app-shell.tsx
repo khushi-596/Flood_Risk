@@ -75,7 +75,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </nav>
 
       {/* Main content */}
-      <main className="flex-1 pb-20 lg:pb-0">{children}</main>
+      <div className="flex-1 pb-20 lg:pb-0">{children}</div>
 
       {/* Mobile bottom tab bar */}
       <nav
