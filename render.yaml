@@ -20,6 +20,8 @@ services:
     dockerContext: .
     healthCheckPath: /v1/health
     envVars:
+      - key: PORT
+        value: 8000
       - key: DATABASE_URL
         fromDatabase:
           name: flood-risk-db
@@ -29,7 +31,7 @@ services:
       - key: APP_ENV
         value: production
       - key: CORS_ORIGINS
-        value: https://flood-risk-web.onrender.com,http://localhost:3000
+        value: https://flood-risk-web.onrender.com,https://flood-risk-api.onrender.com,http://localhost:3000
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_ALGORITHM

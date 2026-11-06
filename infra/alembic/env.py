@@ -31,8 +31,10 @@ def _get_url() -> str:
     """Return the database URL, preferring DATABASE_URL env var over alembic.ini."""
     url = os.environ.get("DATABASE_URL", "")
     if url:
-        # psycopg3 uses postgresql+psycopg:// scheme; normalise if bare postgresql:// given
-        if url.startswith("postgresql://"):
+        # psycopg3 uses postgresql+psycopg:// scheme; normalise if bare postgresql:// or postgres:// given
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql+psycopg://", 1)
+        elif url.startswith("postgresql://"):
             url = url.replace("postgresql://", "postgresql+psycopg://", 1)
         return url
     # Fallback to alembic.ini value (may be blank — migrations will fail with a clear error)
@@ -59,8 +61,8 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode against a live PostgreSQL database."""
-    configuration = config.get_section(config.config_ini_section, {})
+    """Run migrations in 'online' mode (connects to live PostgreSQL database)."""
+    configuration = config.get_section(config.config_ini_section) or {}
     configuration["sqlalchemy.url"] = _get_url()
 
     connectable = engine_from_config(
@@ -70,7 +72,10 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+        )
         with context.begin_transaction():
             context.run_migrations()
 

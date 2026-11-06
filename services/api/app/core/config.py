@@ -3,7 +3,16 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[4]
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for parent in [current] + list(current.parents):
+        if (parent / "data" / "seeds").exists():
+            return parent
+    return Path("/workspace") if Path("/workspace").exists() else Path.cwd()
+
+
+PROJECT_ROOT = _find_project_root()
 
 
 @dataclass(frozen=True)
@@ -26,13 +35,19 @@ def get_settings() -> Settings:
     origins = os.getenv(
         "CORS_ORIGINS",
         "http://localhost:3000,http://localhost:3001,http://localhost:3002,"
-        "http://127.0.0.1:3000,http://127.0.0.1:3001,http://127.0.0.1:3002",
+        "http://127.0.0.1:3000,http://127.0.0.1:3001,http://127.0.0.1:3002,"
+        "https://flood-risk-web.onrender.com",
     )
+    raw_db = os.getenv(
+        "DATABASE_URL", "postgresql+psycopg://flood:flood@localhost:5432/flood_risk"
+    )
+    clean_db = raw_db.replace("postgresql+psycopg://", "postgresql://")
+    if clean_db.startswith("postgres://"):
+        clean_db = clean_db.replace("postgres://", "postgresql://", 1)
+
     return Settings(
         app_env=os.getenv("APP_ENV", "development"),
-        database_url=os.getenv(
-            "DATABASE_URL", "postgresql+psycopg://flood:flood@localhost:5432/flood_risk"
-        ).replace("postgresql+psycopg://", "postgresql://"),
+        database_url=clean_db,
         redis_url=os.getenv("REDIS_URL", "redis://localhost:6379/0"),
         data_dir=Path(os.getenv("DATA_DIR", str(PROJECT_ROOT / "data"))),
         model_config=Path(
