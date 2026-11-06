@@ -13,7 +13,7 @@ The backend is engineered for **resilient, offline-tolerant execution**:
 
 ---
 
-## 2. Test Suite Matrix (43 Total Tests)
+## 2. Test Suite Matrix (86 Total Tests)
 
 | Test Module | Tests | Focus Area & Key Invariants Verified |
 | :--- | :---: | :--- |
@@ -25,8 +25,9 @@ The backend is engineered for **resilient, offline-tolerant execution**:
 | `test_part_c.py` | 7 | `/api/v1` prefix alias parity with `/v1`, root metadata, Structlog structured logger, rate limiting headers, HTTP 429 Too Many Requests verification on limit breach |
 | `test_contract.py` | 4 | Complete OpenAPI 3.1 schema structure, tags/summary completeness, Schemathesis property-based fuzzing, Schemathesis POST response schema validation |
 | `test_failure_modes.py` | 11 | PostGIS offline fallback, Redis offline fallback, Open-Meteo timeout handling, malformed bbox handling, off-grid routing point snapping, unauthorized municipal 401s, photo empty/spoof/size checks, playback out-of-bounds, extreme weather numeric monotonicity, JWT tampering rejection, WebSocket lifecycle |
+| `test_od_benchmarks.py` | 43 | 5 canonical Pune O-D corridors $\times$ 5 rain scenarios ($R_{\text{safe}} \le R_{\text{fast}}$), dry weather bounds ($\le 0.25$), heavy rain flood hotspot evasion, monotonic risk growth, vehicle adaptability, and deep readiness probe (`/health/ready`) |
 
-**Total:** 43 passed in ~11 seconds.
+**Total:** 86 passed in ~15 seconds.
 
 ---
 
@@ -44,15 +45,18 @@ The system includes a production-grade load testing suite defined in `tests/load
 ## 4. How to Run the Tests
 
 ```bash
-# 1. Run full backend pytest test suite (37 tests)
+# 1. Run full backend pytest test suite (86 tests)
 pytest services/api/tests -v
 
-# 2. Run contract and schema tests
+# 2. Run 5 Pune Origin-Destination benchmark suite
+pytest services/api/tests/test_od_benchmarks.py -v
+
+# 3. Run contract and schema tests
 pytest services/api/tests/test_contract.py -v
 
-# 3. Run failure mode and resilience tests
+# 4. Run failure mode and resilience tests
 pytest services/api/tests/test_failure_modes.py -v
 
-# 4. Run headless load test (requires running backend on :8000)
-locust -f tests/load/locustfile.py --host http://localhost:8000 --headless -u 20 -r 5 --run-time 30s
+# 5. Run automated Locust load test (self-contained with auto-server)
+python -m tests.load.run_load_test --host http://127.0.0.1:8000 --users 15 --duration 15
 ```

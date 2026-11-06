@@ -159,6 +159,7 @@ All routes are mounted under both the primary `/v1` prefix and the spec-complian
 | Method | Endpoint | Auth | Rate Limit | Description |
 | :--- | :--- | :--- | :--- | :--- |
 | `GET` | `/v1/health` | Public | 120/min | System liveness and version info |
+| `GET` | `/v1/health/ready` | Public | 120/min | Deep readiness probe checking PostgreSQL & Redis connectivity |
 | `GET` | `/v1/segments` | Public | 120/min | Risk-scored GeoJSON FeatureCollection (cached 30s) |
 | `GET` | `/v1/segments/{id}/explanation`| Public | 120/min | 5-signal risk breakdown and weighted factors |
 | `POST` | `/v1/routes/compare` | Public | 30/min | Fast, Safe, Balanced Dijkstra routes (cached 60s) |
@@ -187,8 +188,11 @@ All routes are mounted under both the primary `/v1` prefix and the spec-complian
 ### Test Suite Execution
 
 ```bash
-# Run all 43 tests (zero running database or Redis required)
+# Run all 86 tests (zero running database or Redis required)
 pytest services/api/tests -v
+
+# Run 5 Pune Origin-Destination benchmark suite
+pytest services/api/tests/test_od_benchmarks.py -v
 
 # Run Schemathesis contract & schema conformance tests
 pytest services/api/tests/test_contract.py -v
@@ -196,11 +200,12 @@ pytest services/api/tests/test_contract.py -v
 # Run failure-mode & graceful degradation tests
 pytest services/api/tests/test_failure_modes.py -v
 
-# Run Locust load test (simulates 4 concurrent personas)
-locust -f tests/load/locustfile.py --host http://localhost:8000 --headless -u 10 -r 2 --run-time 15s
+# Run self-contained Locust load test benchmark
+python -m tests.load.run_load_test --host http://127.0.0.1:8000 --users 15 --duration 15
 ```
 
 Detailed test documentation:
 - [1-Page Test Summary](docs/test_summary.md)
+- [Load Test Performance Report](tests/load/load_test_report.md)
 - [Crowd-Sourced Reporting Specification](docs/crowd-spec.md)
 - [Data Quality Report](data/data_quality_report.md)

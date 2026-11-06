@@ -1,5 +1,6 @@
 import csv
 import io
+from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, Response, UploadFile, status
@@ -67,6 +68,24 @@ def _segment_or_404(segment_id: str) -> dict:
 @limiter.limit("120/minute")
 def health(request: Request) -> dict[str, str]:
     return {"status": "ok", "stage": "day-3", "service": "flood-risk-api"}
+
+
+@router.get("/health/ready", tags=["health"])
+@limiter.limit("120/minute")
+def health_ready(request: Request) -> dict[str, Any]:
+    from app.core.database import is_db_available
+    from app.core.redis import is_redis_available
+
+    db_ok = is_db_available()
+    redis_ok = is_redis_available()
+    status_str = "healthy" if (db_ok and redis_ok) else ("degraded" if (db_ok or redis_ok) else "offline_fallback")
+    return {
+        "status": status_str,
+        "database": "connected" if db_ok else "unavailable (in-memory fallback)",
+        "redis": "connected" if redis_ok else "unavailable (in-memory fallback)",
+        "service": "flood-risk-api",
+    }
+
 
 
 @router.get("/map/segments", tags=["map"])

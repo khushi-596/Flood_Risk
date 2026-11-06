@@ -227,6 +227,112 @@
         "length_m": 1400
       },
       "geometry": {"type": "LineString", "coordinates": [[73.8504, 18.5132], [73.8450, 18.5110], [73.8402, 18.5168]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-016",
+        "name": "Karve Road (Kothrud to Deccan)",
+        "highway": "primary",
+        "risk_score": 0.18,
+        "confidence": 0.70,
+        "risk_band": "low",
+        "reasons": ["Elevated ridge corridor", "Major arterial drainage"],
+        "signals": {"terrain": 0.15, "flood_history": 0.10, "drainage": 0.15},
+        "length_m": 2900
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8150, 18.5020], [73.8270, 18.5090], [73.8402, 18.5168]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-017",
+        "name": "Paud Road (Kothrud Depot to Karve Road)",
+        "highway": "secondary",
+        "risk_score": 0.22,
+        "confidence": 0.65,
+        "risk_band": "low",
+        "reasons": ["Moderate slope descending from hills"],
+        "signals": {"terrain": 0.20, "flood_history": 0.15, "drainage": 0.20},
+        "length_m": 1300
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8050, 18.5060], [73.8150, 18.5020]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-018",
+        "name": "Swargate Chowk Subway Corridor",
+        "highway": "primary",
+        "is_underpass": true,
+        "risk_score": 0.55,
+        "confidence": 0.78,
+        "risk_band": "high",
+        "reasons": ["Natural terrain depression", "Bus depot runoff accumulation"],
+        "signals": {"terrain": 0.70, "flood_history": 0.75, "drainage": 0.65},
+        "length_m": 1100
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8580, 18.5018], [73.8540, 18.5075], [73.8504, 18.5132]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-019",
+        "name": "Shankarsheth Road (Swargate to Camp Bypass)",
+        "highway": "primary",
+        "risk_score": 0.20,
+        "confidence": 0.72,
+        "risk_band": "low",
+        "reasons": ["Elevated arterial bypass", "Direct storm sewer outfalls"],
+        "signals": {"terrain": 0.18, "flood_history": 0.12, "drainage": 0.18},
+        "length_m": 2100
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8580, 18.5018], [73.8680, 18.5110], [73.8780, 18.5220]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-020",
+        "name": "Alka Talkies Mutha Riverbank Road",
+        "highway": "secondary",
+        "risk_score": 0.68,
+        "confidence": 0.80,
+        "risk_band": "high",
+        "reasons": ["Mutha river backwater flooding", "Low elevation basin"],
+        "signals": {"terrain": 0.85, "flood_history": 0.88, "drainage": 0.72},
+        "length_m": 1200
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8402, 18.5168], [73.8475, 18.5147], [73.8504, 18.5132]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-021",
+        "name": "Dhole Patil Road (Station to Bund Garden High Ridge)",
+        "highway": "secondary",
+        "risk_score": 0.16,
+        "confidence": 0.72,
+        "risk_band": "low",
+        "reasons": ["High ridge alignment away from railway culverts"],
+        "signals": {"terrain": 0.14, "flood_history": 0.08, "drainage": 0.12},
+        "length_m": 1150
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8744, 18.5282], [73.8790, 18.5315], [73.8820, 18.5340]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-022",
+        "name": "Yerawada Bridge Link",
+        "highway": "primary",
+        "risk_score": 0.28,
+        "confidence": 0.68,
+        "risk_band": "low",
+        "reasons": ["Standard bridge approach"],
+        "signals": {"terrain": 0.25, "flood_history": 0.22, "drainage": 0.25},
+        "length_m": 1250
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8820, 18.5340], [73.8850, 18.5420], [73.8913, 18.5375]]}
     }
   ]
 }

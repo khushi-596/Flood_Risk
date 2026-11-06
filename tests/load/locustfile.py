@@ -53,13 +53,13 @@ class CommuterUser(HttpUser):
         payload = {
             "origin": {"longitude": 73.8448, "latitude": 18.5212},
             "destination": {"longitude": 73.8740, "latitude": 18.5285},
-            "vehicle": random.choice(["car", "two_wheeler", "auto"]),
+            "vehicle": random.choice(["car", "two_wheeler", "bus", "truck"]),
         }
         self.client.post("/v1/routes/compare", json=payload, name="POST /v1/routes/compare")
 
     @task(2)
     def check_travel_advice(self):
-        v = random.choice(["car", "two_wheeler", "auto"])
+        v = random.choice(["car", "two_wheeler", "bus", "truck"])
         self.client.get(f"/v1/travel-advice?vehicle={v}", name="GET /v1/travel-advice")
 
 
@@ -74,7 +74,7 @@ class CitizenReporterUser(HttpUser):
     @task(2)
     def submit_report(self):
         payload = {
-            "report_type": random.choice(["waterlogging", "blocked_drain", "manhole_overflow"]),
+            "report_type": random.choice(["waterlogging", "flood", "blocked_drain", "pothole"]),
             "severity": random.randint(2, 5),
             "longitude": 73.8567 + random.uniform(-0.02, 0.02),
             "latitude": 18.5204 + random.uniform(-0.02, 0.02),

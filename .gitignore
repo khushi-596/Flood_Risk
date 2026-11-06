@@ -36,3 +36,7 @@ uploads/*
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Load test temporary run results
+tests/load/results/
+
