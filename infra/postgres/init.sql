@@ -98,3 +98,14 @@ CREATE TABLE IF NOT EXISTS weather_observations (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS weather_observations_time_idx ON weather_observations (observed_at DESC);
+
+CREATE TABLE IF NOT EXISTS alerts (
+  id BIGSERIAL PRIMARY KEY,
+  seg_id TEXT NOT NULL REFERENCES segments(seg_id) ON DELETE CASCADE,
+  band TEXT NOT NULL,
+  risk_score DOUBLE PRECISION,
+  message TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS alerts_seg_id_time_idx ON alerts (seg_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS alerts_time_idx ON alerts (created_at DESC);

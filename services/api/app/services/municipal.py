@@ -10,6 +10,7 @@ Provides:
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from datetime import datetime, timezone
 from typing import Any
@@ -20,8 +21,8 @@ from fastapi import HTTPException, status
 
 from app.core.config import get_settings
 from app.core.database import is_db_available
-from app.schemas import WorkOrderCreate, WorkOrderResponse, WorkOrderUpdate
-from app.services.reports import review_report, verified_report_counts
+from app.schemas import MunicipalStatsResponse, WorkOrderCreate, WorkOrderResponse, WorkOrderUpdate
+from app.services.reports import _in_memory_reports, _report_counts_cache, review_report, verified_report_counts
 from app.services.risk_engine import segment_threshold
 from app.services.segments import get_segment, list_segments
 from app.services.weather import rain_store
@@ -182,12 +183,24 @@ def update_work_order(order_id: UUID, payload: WorkOrderUpdate) -> WorkOrderResp
             rec["assigned_to"] = payload.assigned_to
         rec["updated_at"] = now
 
-        # If resolved, update report status in memory
-        if payload.status == "resolved" and rec["report_id"]:
-            try:
-                review_report(rec["report_id"], "resolved", "system-work-order")
-            except Exception:
-                pass
+        # If resolved, update report status in memory — clear ALL verified reports
+        # for this segment (not just the directly linked report_id), so the crowd
+        # signal is fully removed from risk scoring even when no report_id is set.
+        if payload.status == "resolved":
+            seg_id = rec.get("segment_id")
+            # Clear linked report (if any)
+            if rec["report_id"]:
+                try:
+                    review_report(rec["report_id"], "resolved", "system-work-order")
+                except Exception:
+                    pass
+            # Clear all remaining verified reports for the same segment
+            if seg_id:
+                for r in _in_memory_reports.values():
+                    if r.get("segment_id") == seg_id and r.get("status") == "verified":
+                        r["status"] = "resolved"
+            # Bust the report counts cache so next read reflects clearance
+            _report_counts_cache["last_checked"] = 0.0
 
         return WorkOrderResponse(
             id=rec["id"],
@@ -291,3 +304,89 @@ def drain_failure_flags() -> list[dict[str, Any]]:
             })
 
     return flags
+
+
+def municipal_stats() -> MunicipalStatsResponse:
+    """Return aggregated KPI statistics for the municipal dashboard."""
+    now_utc = datetime.now(timezone.utc)
+    start_of_today = datetime(now_utc.year, now_utc.month, now_utc.day, tzinfo=timezone.utc)
+
+    if is_db_available():
+        try:
+            with psycopg.connect(get_settings().database_url, connect_timeout=1) as conn:
+                with conn.cursor() as cur:
+                    # Open reports (pending + verified)
+                    cur.execute("SELECT COUNT(*) FROM citizen_reports WHERE status IN ('pending', 'verified')")
+                    open_reps = cur.fetchone()[0]
+
+                    # Pending reports
+                    cur.execute("SELECT COUNT(*) FROM citizen_reports WHERE status = 'pending'")
+                    pending_reps = cur.fetchone()[0]
+
+                    # Verified today
+                    cur.execute(
+                        "SELECT COUNT(*) FROM citizen_reports WHERE status = 'verified' AND verified_at >= %s",
+                        (start_of_today,),
+                    )
+                    verif_today = cur.fetchone()[0]
+
+                    # Open work orders
+                    cur.execute("SELECT COUNT(*) FROM work_orders WHERE status != 'resolved'")
+                    open_wos = cur.fetchone()[0]
+
+                    active_hs = len(hotspots())
+
+                    return MunicipalStatsResponse(
+                        open_reports=open_reps,
+                        verified_today=verif_today,
+                        active_hotspots=active_hs,
+                        open_work_orders=open_wos,
+                        pending_reports=pending_reps,
+                    )
+        except Exception:
+            pass
+
+    # In-memory fallback
+    from app.services.reports import _in_memory_reports
+
+    open_reps = 0
+    pending_reps = 0
+    verif_today = 0
+    for r in _in_memory_reports.values():
+        st = r.get("status")
+        if st in ("pending", "verified"):
+            open_reps += 1
+        if st == "pending":
+            pending_reps += 1
+        if st == "verified":
+            v_time = r.get("verified_at") or r.get("created_at")
+            if v_time and v_time >= start_of_today:
+                verif_today += 1
+
+    open_wos = sum(1 for o in _in_memory_work_orders.values() if o.get("status") != "resolved")
+    active_hs = len(hotspots())
+
+    return MunicipalStatsResponse(
+        open_reports=open_reps,
+        verified_today=verif_today,
+        active_hotspots=active_hs,
+        open_work_orders=open_wos,
+        pending_reports=pending_reps,
+    )
+
+
+async def drainage_failure_detector_task(interval_sec: float = 300.0) -> None:
+    """Periodic background worker detecting structural drainage failures every 5 minutes."""
+    while True:
+        try:
+            flags = drain_failure_flags()
+            if flags:
+                logger.warning(
+                    "drainage_failures_detected",
+                    count=len(flags),
+                    flagged_segments=[f["segment_id"] for f in flags],
+                )
+        except Exception as exc:
+            logger.warning("drainage_failure_detector_error: %s", exc)
+        await asyncio.sleep(interval_sec)
+

@@ -89,6 +89,9 @@ class RainStateStore:
         )
         self._simulated = False
         self._history: list[tuple[datetime, float]] = []
+        self._grid_readings: dict[str, tuple[float, float]] = {
+            name: (0.0, 0.0) for name in PUNE_GRID_POINTS
+        }
         self._playback_data: dict[str, Any] | None = None
         self._restore_sim_state_from_redis()
 
@@ -182,6 +185,7 @@ class RainStateStore:
             updated_at=datetime.now(timezone.utc),
             playback_step=None,
         )
+        self._grid_readings = {name: (rainfall, forecast) for name in PUNE_GRID_POINTS}
         self._simulated = True
         self._persist_sim_state_to_redis()
         # Invalidate segment risk cache so next request scores against new rain level
@@ -203,6 +207,7 @@ class RainStateStore:
             updated_at=datetime.now(timezone.utc),
             playback_step=None,
         )
+        self._grid_readings = {name: (round(rainfall_mm_hour, 1), round(forecast, 1)) for name in PUNE_GRID_POINTS}
         self._simulated = True
         self._persist_sim_state_to_redis()
         try:
@@ -231,6 +236,7 @@ class RainStateStore:
             updated_at=datetime.now(timezone.utc),
             playback_step=step_index,
         )
+        self._grid_readings = {name: (rainfall, forecast) for name in PUNE_GRID_POINTS}
         self._simulated = True
         self._persist_sim_state_to_redis()
         try:
@@ -251,6 +257,84 @@ class RainStateStore:
         except Exception:
             pass
 
+    def _load_history_from_db(self) -> list[tuple[datetime, float]]:
+        """Read recent observation time series from weather_observations table."""
+        try:
+            from app.core.database import is_db_available
+            if is_db_available():
+                with psycopg.connect(get_settings().database_url, connect_timeout=1) as conn:
+                    with conn.cursor() as cur:
+                        cur.execute(
+                            """
+                            SELECT observed_at, rainfall_mm_hour
+                            FROM weather_observations
+                            WHERE source = 'live'
+                            ORDER BY observed_at DESC
+                            LIMIT 10
+                            """
+                        )
+                        rows = cur.fetchall()
+                        if rows:
+                            return sorted(rows, key=lambda x: x[0])
+        except Exception:
+            pass
+        return self._history
+
+    def get_observation_history(self, limit: int = 50) -> list[dict[str, Any]]:
+        """Return historical weather observations from DB or in-memory fallback."""
+        try:
+            from app.core.database import is_db_available
+            if is_db_available():
+                with psycopg.connect(get_settings().database_url, connect_timeout=1) as conn:
+                    with conn.cursor() as cur:
+                        cur.execute(
+                            """
+                            SELECT observed_at, rainfall_mm_hour, forecast_30m_mm_hour, source, is_stale
+                            FROM weather_observations
+                            ORDER BY observed_at DESC
+                            LIMIT %s
+                            """,
+                            (limit,),
+                        )
+                        rows = cur.fetchall()
+                        if rows:
+                            return [
+                                {
+                                    "observed_at": r[0],
+                                    "rainfall_mm_hour": float(r[1]),
+                                    "forecast_30m_mm_hour": float(r[2]),
+                                    "source": str(r[3]),
+                                    "is_stale": bool(r[4]),
+                                }
+                                for r in rows
+                            ]
+        except Exception:
+            pass
+
+        # In-memory fallback
+        results = []
+        for dt, rain in reversed(self._history[-limit:]):
+            results.append(
+                {
+                    "observed_at": dt,
+                    "rainfall_mm_hour": float(rain),
+                    "forecast_30m_mm_hour": round(float(rain) * 1.15, 1),
+                    "source": self._state.source,
+                    "is_stale": self._state.is_stale,
+                }
+            )
+        if not results:
+            results.append(
+                {
+                    "observed_at": self._state.updated_at,
+                    "rainfall_mm_hour": self._state.rainfall_mm_hour,
+                    "forecast_30m_mm_hour": self._state.forecast_30m_mm_hour,
+                    "source": self._state.source,
+                    "is_stale": self._state.is_stale,
+                }
+            )
+        return results
+
     def _record_to_db(self, rainfall: float, forecast_30m: float, source: str, is_stale: bool) -> None:
         """Best-effort persistence to weather_observations table."""
         try:
@@ -268,19 +352,56 @@ class RainStateStore:
         except Exception:
             pass  # Non-blocking for offline environments
 
+    def get_rainfall_for_location(
+        self,
+        latitude: float,
+        longitude: float,
+        use_forecast: bool = False,
+    ) -> float:
+        """Return rainfall for the nearest Pune grid station, or fallback to zone-level value."""
+        if self._grid_readings:
+            best_station = min(
+                PUNE_GRID_POINTS.keys(),
+                key=lambda name: (latitude - PUNE_GRID_POINTS[name][0]) ** 2
+                + (longitude - PUNE_GRID_POINTS[name][1]) ** 2,
+            )
+            reading = self._grid_readings.get(best_station)
+            if reading:
+                return reading[1] if use_forecast else reading[0]
+        return self._state.forecast_30m_mm_hour if use_forecast else self._state.rainfall_mm_hour
+
+    def get_grid_readings(self) -> dict[str, dict[str, Any]]:
+        """Return all grid stations and their current readings."""
+        result = {}
+        for name, (lat, lon) in PUNE_GRID_POINTS.items():
+            cur, fcast = self._grid_readings.get(
+                name, (self._state.rainfall_mm_hour, self._state.forecast_30m_mm_hour)
+            )
+            result[name] = {
+                "latitude": lat,
+                "longitude": lon,
+                "rainfall_mm_hour": cur,
+                "forecast_30m_mm_hour": fcast,
+                "level": _level_for(cur),
+            }
+        return result
+
     async def refresh_from_open_meteo(self) -> RainStateResponse:
         """Fetch precipitation across Pune grid points and compute 30m forecast with trend."""
         if self._simulated:
             return self.response()
 
-        lat, lon = PUNE_GRID_POINTS["central"]
+        station_names = list(PUNE_GRID_POINTS.keys())
+        lats = [str(PUNE_GRID_POINTS[s][0]) for s in station_names]
+        lons = [str(PUNE_GRID_POINTS[s][1]) for s in station_names]
+
         try:
             async with httpx.AsyncClient(timeout=8) as client:
                 response = await client.get(
                     "https://api.open-meteo.com/v1/forecast",
                     params={
-                        "latitude": lat,
-                        "longitude": lon,
+                        "latitude": ",".join(lats),
+                        "longitude": ",".join(lons),
                         "current": "precipitation",
                         "minutely_15": "precipitation",
                         "forecast_days": 1,
@@ -289,39 +410,59 @@ class RainStateStore:
                 response.raise_for_status()
                 payload = response.json()
 
-            current = float(payload.get("current", {}).get("precipitation", 0.0))
-            forecast_values = [
-                float(v) for v in payload.get("minutely_15", {}).get("precipitation", [])[:3]
-            ]
-            raw_forecast = max(forecast_values, default=current)
+            # Handle multi-location response list vs single location / mock dict
+            if isinstance(payload, list):
+                for name, item in zip(station_names, payload):
+                    cur = float(item.get("current", {}).get("precipitation", 0.0))
+                    f_vals = [
+                        float(v) for v in item.get("minutely_15", {}).get("precipitation", [])[:3]
+                    ]
+                    raw_f = max(f_vals, default=cur)
+                    self._grid_readings[name] = (cur, raw_f)
+            elif isinstance(payload, dict):
+                cur = float(payload.get("current", {}).get("precipitation", 0.0))
+                f_vals = [
+                    float(v) for v in payload.get("minutely_15", {}).get("precipitation", [])[:3]
+                ]
+                raw_f = max(f_vals, default=cur)
+                self._grid_readings = {name: (cur, raw_f) for name in station_names}
 
-            # Compute 60-min linear trend from observation history
+            # City-wide representative value (maximum reading across Pune stations for safety)
+            city_current = max((r[0] for r in self._grid_readings.values()), default=0.0)
+            city_raw_forecast = max((r[1] for r in self._grid_readings.values()), default=city_current)
+
+            # Compute 60-min linear trend from observation history (database + in-memory)
             now = datetime.now(timezone.utc)
-            self._history.append((now, current))
-            # Keep last 10 observations (~100 mins)
-            if len(self._history) > 10:
-                self._history.pop(0)
+            history = self._load_history_from_db()
+            history.append((now, city_current))
+            if len(history) > 10:
+                history = history[-10:]
+            self._history = history
 
             trend = 0.0
             if len(self._history) >= 2:
                 oldest_time, oldest_val = self._history[0]
                 delta_minutes = max(1.0, (now - oldest_time).total_seconds() / 60.0)
-                slope_per_min = (current - oldest_val) / delta_minutes
+                slope_per_min = (city_current - oldest_val) / delta_minutes
                 trend = slope_per_min * 30.0  # 30-min projection component
 
-            # Combine 15-minute forecast with linear observation trend
-            projected_30m = max(0.0, round(raw_forecast + 0.5 * trend, 1))
+            # Combine 15-minute forecast with linear observation trend per station
+            for name, (c_val, f_val) in list(self._grid_readings.items()):
+                proj_30m = max(0.0, round(f_val + 0.5 * trend, 1))
+                self._grid_readings[name] = (c_val, proj_30m)
+
+            projected_30m = max(0.0, round(city_raw_forecast + 0.5 * trend, 1))
 
             self._state = _RainState(
-                level=_level_for(current),
-                rainfall_mm_hour=current,
+                level=_level_for(city_current),
+                rainfall_mm_hour=city_current,
                 forecast_30m_mm_hour=projected_30m,
                 source="live",
                 is_stale=False,
                 updated_at=now,
                 playback_step=None,
             )
-            self._record_to_db(current, projected_30m, "live", False)
+            self._record_to_db(city_current, projected_30m, "live", False)
 
         except (httpx.HTTPError, KeyError, TypeError, ValueError) as exc:
             logger.warning("Open-Meteo refresh failed: %s; using last known state marked stale.", exc)

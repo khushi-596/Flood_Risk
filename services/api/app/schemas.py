@@ -85,6 +85,14 @@ class RainStateResponse(BaseModel):
     playback_step: int | None = None
 
 
+class WeatherObservation(BaseModel):
+    observed_at: datetime
+    rainfall_mm_hour: float
+    forecast_30m_mm_hour: float
+    source: str
+    is_stale: bool
+
+
 
 class Coordinate(BaseModel):
     longitude: float = Field(ge=73.80, le=73.93)
@@ -95,6 +103,7 @@ class RouteRequest(BaseModel):
     origin: Coordinate
     destination: Coordinate
     vehicle: VehicleType = "car"
+    horizon_min: int = Field(default=0, ge=0, le=60, description="Forecast horizon in minutes (0 or 30)")
 
 
 class RouteOption(BaseModel):
@@ -183,3 +192,11 @@ class WorkOrderResponse(BaseModel):
     assigned_to: str | None
     created_at: datetime
     updated_at: datetime
+
+
+class MunicipalStatsResponse(BaseModel):
+    open_reports: int
+    verified_today: int
+    active_hotspots: int
+    open_work_orders: int
+    pending_reports: int

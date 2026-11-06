@@ -30,6 +30,8 @@ from app.core.config import get_settings
 from app.core.limiter import limiter
 from app.core.logging import configure_logging, get_logger
 from app.services.alerts import alert_hub
+from app.services.municipal import drainage_failure_detector_task
+from app.services.segments import persist_segment_risk
 from app.services.weather import rain_store, weather_poller_task
 
 logger = get_logger(__name__)
@@ -45,6 +47,8 @@ async def lifespan(_: FastAPI):
     await rain_store.refresh_from_open_meteo()
     alert_task = asyncio.create_task(alert_hub.monitor())
     weather_task = asyncio.create_task(weather_poller_task())
+    risk_task = asyncio.create_task(persist_segment_risk())
+    drain_task = asyncio.create_task(drainage_failure_detector_task())
 
     logger.info("flood_risk_api_ready")
     try:
@@ -52,9 +56,13 @@ async def lifespan(_: FastAPI):
     finally:
         alert_task.cancel()
         weather_task.cancel()
+        risk_task.cancel()
+        drain_task.cancel()
         with suppress(asyncio.CancelledError):
             await alert_task
             await weather_task
+            await risk_task
+            await drain_task
         logger.info("flood_risk_api_shutdown")
 
 

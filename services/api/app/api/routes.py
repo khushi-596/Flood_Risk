@@ -12,6 +12,7 @@ from app.schemas import (
     CrowdReportReceipt,
     CrowdReportSummary,
     LoginRequest,
+    MunicipalStatsResponse,
     RainSimulationRequest,
     RainStateResponse,
     ReportReviewRequest,
@@ -20,12 +21,20 @@ from app.schemas import (
     TokenResponse,
     TravelAdviceRequest,
     TravelAdviceResponse,
+    WeatherObservation,
     WorkOrderCreate,
     WorkOrderResponse,
     WorkOrderUpdate,
 )
 from app.services.auth import login, require_staff
-from app.services.municipal import create_work_order, drain_failure_flags, hotspots, list_work_orders, update_work_order
+from app.services.municipal import (
+    create_work_order,
+    drain_failure_flags,
+    hotspots,
+    list_work_orders,
+    municipal_stats,
+    update_work_order,
+)
 from app.services.reports import create_report, list_reports, review_report, save_report_photo, verified_report_counts
 from app.services.risk_engine import weighted_contributions
 from app.services.routing import compare_routes, travel_advice
@@ -126,11 +135,41 @@ def segment_explanation(request: Request, segment_id: str) -> dict:
     }
 
 
+@router.get("/segments/risk/current", tags=["map"])
+@limiter.limit("60/minute")
+def persisted_segment_risk_snapshot(
+    request: Request,
+    segment_id: str | None = Query(default=None, description="Optional segment ID"),
+) -> Any:
+    from app.services.segments import get_persisted_segment_risk
+    res = get_persisted_segment_risk(segment_id)
+    if res is None and segment_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Segment {segment_id} risk not found")
+    return res
+
+
 @router.get("/rain", response_model=RainStateResponse, tags=["rain"])
 @router.get("/rainfall", response_model=RainStateResponse, tags=["rain"])
 @limiter.limit("120/minute")
 def rain_state(request: Request) -> RainStateResponse:
     return rain_store.response()
+
+
+@router.get("/rain/history", response_model=list[WeatherObservation], tags=["rain"])
+@router.get("/weather/history", response_model=list[WeatherObservation], tags=["rain"])
+@limiter.limit("60/minute")
+def rain_history(
+    request: Request,
+    limit: int = Query(default=24, ge=1, le=100, description="Max observations to return"),
+) -> list[WeatherObservation]:
+    return [WeatherObservation(**item) for item in rain_store.get_observation_history(limit=limit)]
+
+
+@router.get("/rain/grid", tags=["rain"])
+@router.get("/weather/grid", tags=["rain"])
+@limiter.limit("60/minute")
+def rain_grid(request: Request) -> dict[str, Any]:
+    return rain_store.get_grid_readings()
 
 
 @router.post("/rain/simulate", response_model=RainStateResponse, tags=["rain"])
@@ -237,6 +276,23 @@ def reject_report_direct(request: Request, report_id: UUID, staff_email: str = D
 def municipal_login(request: Request, payload: LoginRequest) -> TokenResponse:
     logger.info("municipal_login_attempt", email=payload.email)
     return login(payload)
+
+
+@router.get("/municipal/stats", response_model=MunicipalStatsResponse, tags=["municipal"])
+@router.get("/municipal/dashboard", response_model=MunicipalStatsResponse, tags=["municipal"])
+@limiter.limit("60/minute")
+def municipal_stats_endpoint(request: Request, _: str = Depends(require_staff)) -> MunicipalStatsResponse:
+    """Return aggregated KPI statistics for municipal overview."""
+    return municipal_stats()
+
+
+@router.get("/alerts", tags=["alerts"])
+@router.get("/municipal/alerts", tags=["municipal"])
+@limiter.limit("60/minute")
+def list_alerts_endpoint(request: Request, limit: int = Query(default=50, ge=1, le=200)) -> list[dict]:
+    """Retrieve recently logged risk-band crossing alerts."""
+    from app.services.alerts import list_recent_alerts
+    return list_recent_alerts(limit=limit)
 
 
 @router.get("/municipal/reports", response_model=list[CrowdReportSummary], tags=["municipal"])

@@ -14,10 +14,14 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import WebSocket
+import psycopg
 
+from app.core.config import get_settings
+from app.core.database import is_db_available
 from app.core.redis import (
     is_redis_available,
     publish_alert_event,
@@ -32,6 +36,71 @@ logger = logging.getLogger(__name__)
 
 RISK_RANK = {"low": 0, "moderate": 1, "high": 2, "severe": 3}
 ALERT_CHANNEL = "flood:risk:alerts"
+
+_recorded_alerts: list[dict[str, Any]] = []
+
+
+def _record_alert(seg_id: str, band: str, risk_score: float, message: str) -> None:
+    """Persist alert event to PostgreSQL alerts table and in-memory fallback list."""
+    now_utc = datetime.now(timezone.utc)
+    record = {
+        "seg_id": seg_id,
+        "band": band,
+        "risk_score": risk_score,
+        "message": message,
+        "created_at": now_utc,
+    }
+    _recorded_alerts.append(record)
+    if len(_recorded_alerts) > 500:
+        _recorded_alerts.pop(0)
+
+    try:
+        if is_db_available():
+            with psycopg.connect(get_settings().database_url, connect_timeout=1) as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        INSERT INTO alerts (seg_id, band, risk_score, message, created_at)
+                        VALUES (%s, %s, %s, %s, %s)
+                        """,
+                        (seg_id, band, risk_score, message, now_utc),
+                    )
+                conn.commit()
+    except Exception:
+        pass
+
+
+def list_recent_alerts(limit: int = 50) -> list[dict[str, Any]]:
+    """Return recently triggered risk band alerts (from DB or in-memory fallback)."""
+    try:
+        if is_db_available():
+            with psycopg.connect(get_settings().database_url, connect_timeout=1) as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        SELECT id, seg_id, band, risk_score, message, created_at
+                        FROM alerts
+                        ORDER BY created_at DESC
+                        LIMIT %s
+                        """,
+                        (limit,),
+                    )
+                    rows = cur.fetchall()
+                    if rows:
+                        return [
+                            {
+                                "id": r[0],
+                                "seg_id": r[1],
+                                "band": r[2],
+                                "risk_score": r[3],
+                                "message": r[4],
+                                "created_at": r[5],
+                            }
+                            for r in rows
+                        ]
+    except Exception:
+        pass
+    return sorted(_recorded_alerts, key=lambda x: x["created_at"], reverse=True)[:limit]
 
 
 class AlertHub:
@@ -73,6 +142,13 @@ class AlertHub:
                     "risk_score": props["risk_score"],
                     "message": f"{props['name']} has entered {band} flood-risk conditions.",
                 }
+                # Persist alert record to DB and in-memory list
+                _record_alert(
+                    seg_id=segment_id,
+                    band=band,
+                    risk_score=float(props["risk_score"]),
+                    message=alert["message"],
+                )
                 # Publish to Redis Pub/Sub (and local queue fallback) so all workers broadcast
                 await publish_alert_event(ALERT_CHANNEL, alert)
 

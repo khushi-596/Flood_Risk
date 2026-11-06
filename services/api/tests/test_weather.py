@@ -66,3 +66,93 @@ def test_get_travel_advice_endpoint() -> None:
     assert data["verdict"] in ("go", "caution", "wait", "avoid")
     assert data["trend"] in ("rising", "falling", "stable")
     assert len(data["reasons"]) >= 2
+
+
+def test_multipoint_grid_and_location_lookup() -> None:
+    """Verify multi-point spatial weather grid stations and nearest location lookups."""
+    # Set simulated rain
+    rain_store.set_custom(rainfall_mm_hour=25.0, forecast_30m=35.0)
+
+    # Grid readings dictionary
+    readings = rain_store.get_grid_readings()
+    assert len(readings) == 5
+    assert "central" in readings
+    assert "swargate" in readings
+    assert "shivajinagar" in readings
+    assert "koregaon_park" in readings
+    assert "station" in readings
+
+    # Swargate coordinate lookup
+    rain_swargate = rain_store.get_rainfall_for_location(18.5080, 73.8500)
+    assert rain_swargate == 25.0
+
+    forecast_swargate = rain_store.get_rainfall_for_location(18.5080, 73.8500, use_forecast=True)
+    assert forecast_swargate == 35.0
+
+    # Reset
+    rain_store.set_simulator("none")
+
+
+def test_segment_risk_persistence_snapshot() -> None:
+    """Verify segment risk snapshot computation and in-memory persistence."""
+    from app.services.segments import _in_memory_segment_risk, persist_segment_risk_snapshot
+
+    # Take snapshot
+    count = persist_segment_risk_snapshot()
+    assert count > 0
+    assert len(_in_memory_segment_risk) == count
+
+    # Validate snapshot structure
+    sample_key = next(iter(_in_memory_segment_risk))
+    sample = _in_memory_segment_risk[sample_key]
+    assert "seg_id" in sample
+    assert "risk_now" in sample
+    assert "risk_30" in sample
+    assert "risk_band" in sample
+    assert "confidence" in sample
+    assert "factors" in sample
+    assert "updated_at" in sample
+
+
+def test_weather_history_and_grid_endpoints() -> None:
+    """Verify weather history and spatial grid API endpoints."""
+    # Test grid endpoint
+    res_grid = client.get("/v1/weather/grid")
+    assert res_grid.status_code == 200
+    grid = res_grid.json()
+    assert "central" in grid
+    assert "swargate" in grid
+
+    # Test history endpoint
+    res_hist = client.get("/v1/weather/history?limit=10")
+    assert res_hist.status_code == 200
+    history = res_hist.json()
+    assert isinstance(history, list)
+    assert len(history) >= 1
+    obs = history[0]
+    assert "observed_at" in obs
+    assert "rainfall_mm_hour" in obs
+    assert "forecast_30m_mm_hour" in obs
+    assert "source" in obs
+
+
+def test_persisted_segment_risk_endpoint() -> None:
+    """Verify retrieval of persisted segment risk scores."""
+    from app.services.segments import persist_segment_risk_snapshot
+    persist_segment_risk_snapshot()
+
+    # Query all
+    res = client.get("/v1/segments/risk/current")
+    assert res.status_code == 200
+    items = res.json()
+    assert isinstance(items, list)
+    assert len(items) > 0
+
+    first_id = items[0]["seg_id"]
+    res_single = client.get(f"/v1/segments/risk/current?segment_id={first_id}")
+    assert res_single.status_code == 200
+    single = res_single.json()
+    assert single["seg_id"] == first_id
+    assert "risk_now" in single
+    assert "risk_30" in single
+

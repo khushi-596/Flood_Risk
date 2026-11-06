@@ -151,3 +151,43 @@ def test_photo_upload_validation() -> None:
     res_valid = client.post("/v1/reports/photo", files={"file": ("valid.png", io.BytesIO(valid_bytes), "image/png")})
     assert res_valid.status_code == 200
     assert res_valid.json()["photo_path"].startswith("/uploads/")
+
+
+def test_municipal_stats_endpoint() -> None:
+    token = _get_staff_token()
+    res = client.get("/v1/municipal/stats", headers={"Authorization": f"Bearer {token}"})
+    assert res.status_code == 200
+    data = res.json()
+    assert "open_reports" in data
+    assert "verified_today" in data
+    assert "active_hotspots" in data
+    assert "open_work_orders" in data
+    assert "pending_reports" in data
+    assert isinstance(data["open_reports"], int)
+
+    # Alias /municipal/dashboard should also work
+    res_alias = client.get("/v1/municipal/dashboard", headers={"Authorization": f"Bearer {token}"})
+    assert res_alias.status_code == 200
+    assert res_alias.json()["open_reports"] == data["open_reports"]
+
+
+def test_alerts_endpoint_and_persistence() -> None:
+    from app.services.alerts import _record_alert
+
+    # Record a test alert
+    _record_alert(
+        seg_id="pune-demo-001",
+        band="severe",
+        risk_score=0.88,
+        message="JM Road has entered severe flood-risk conditions.",
+    )
+
+    res = client.get("/v1/alerts")
+    assert res.status_code == 200
+    alerts = res.json()
+    assert len(alerts) >= 1
+    sample = next((a for a in alerts if a["seg_id"] == "pune-demo-001"), None)
+    assert sample is not None
+    assert sample["band"] == "severe"
+    assert "JM Road" in sample["message"]
+

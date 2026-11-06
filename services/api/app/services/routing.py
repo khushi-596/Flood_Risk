@@ -15,7 +15,7 @@ from typing import Any
 
 import networkx as nx
 
-from app.core.redis import cache_get_json, cache_set_json
+from app.core.redis import cache_delete_pattern, cache_get_json, cache_set_json
 from app.schemas import (
     Coordinate,
     RouteOption,
@@ -129,6 +129,28 @@ def _build_road_graph(features: list[dict[str, Any]]) -> nx.DiGraph:
                     )
 
     return graph
+
+
+_cached_base_graph: nx.DiGraph | None = None
+_cached_graph_features_hash: str | None = None
+
+
+def invalidate_graph_cache() -> None:
+    """Clear cached road network graph and cached route responses."""
+    global _cached_base_graph, _cached_graph_features_hash
+    _cached_base_graph = None
+    _cached_graph_features_hash = None
+    cache_delete_pattern("route:*")
+
+
+def _get_road_graph(features: list[dict[str, Any]]) -> nx.DiGraph:
+    """Return a working clone of the cached base road network graph."""
+    global _cached_base_graph, _cached_graph_features_hash
+    features_sig = f"{len(features)}:{features[0]['properties']['segment_id'] if features else ''}"
+    if _cached_base_graph is None or _cached_graph_features_hash != features_sig:
+        _cached_base_graph = _build_road_graph(features)
+        _cached_graph_features_hash = features_sig
+    return _cached_base_graph.copy()
 
 
 def _nearest_node(graph: nx.DiGraph, point: Coordinate) -> tuple[float, float]:
@@ -258,18 +280,20 @@ def _compute_route_option(
 def compare_routes(request: RouteRequest) -> RouteResponse:
     """Compare Fast, Safe, and Balanced routes over the risk-weighted graph.
 
-    Results are cached for 60 s keyed by origin, destination, vehicle, and current rainfall
+    Results are cached for 60 s keyed by origin, destination, vehicle, horizon, and rainfall
     so identical requests within the same rain window skip the Dijkstra computation.
     """
     rain = rain_store.response()
+    scoring_rain = rain.forecast_30m_mm_hour if request.horizon_min >= 30 else rain.rainfall_mm_hour
 
-    # Stable cache key — includes rainfall so rain changes invalidate old entries
+    # Stable cache key — includes rainfall and horizon so rain/horizon changes invalidate old entries
     key_data = json.dumps(
         {
             "origin": [request.origin.longitude, request.origin.latitude],
             "dest": [request.destination.longitude, request.destination.latitude],
             "vehicle": request.vehicle,
-            "rain": round(rain.rainfall_mm_hour, 1),
+            "horizon_min": request.horizon_min,
+            "rain": round(scoring_rain, 1),
         },
         sort_keys=True,
         separators=(",", ":"),
@@ -281,14 +305,14 @@ def compare_routes(request: RouteRequest) -> RouteResponse:
         # Reconstruct Pydantic model from cached dict
         return RouteResponse.model_validate(cached)
 
-    collection = scored_segments(rain.rainfall_mm_hour, verified_report_counts())
+    collection = scored_segments(scoring_rain, verified_report_counts())
     features = collection.get("features", [])
 
     # Map segment_id -> properties
     segment_props = {f["properties"]["segment_id"]: f["properties"] for f in features}
 
-    # Build road network graph
-    graph = _build_road_graph(features)
+    # Use cached road network graph clone
+    graph = _get_road_graph(features)
 
     # Vehicle limits
     vehicle_config = load_vehicle_limits().get(request.vehicle, {})
@@ -330,8 +354,8 @@ def travel_advice(request: TravelAdviceRequest) -> TravelAdviceResponse:
     forecast_features = scored_segments(rain.forecast_30m_mm_hour, counts)["features"]
 
     if request.origin and request.destination:
-        current_graph = _build_road_graph(current_features)
-        forecast_graph = _build_road_graph(forecast_features)
+        current_graph = _get_road_graph(current_features)
+        forecast_graph = _get_road_graph(forecast_features)
         v_conf = load_vehicle_limits().get(request.vehicle, {})
 
         current_risk = _compute_route_option(

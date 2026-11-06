@@ -1,0 +1,126 @@
+{
+  "type": "FeatureCollection",
+  "name": "pcmc_zone_2_segments",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pcmc-demo-001",
+        "name": "Old Mumbai-Pune Highway (Akurdi Section)",
+        "highway": "primary",
+        "is_underpass": false,
+        "signals": {
+          "terrain": 0.15,
+          "flood_history": 0.10,
+          "drainage": 0.20
+        },
+        "threshold_mm_hr": 35.0,
+        "length_m": 720.0
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [73.7850, 18.6450],
+          [73.7910, 18.6470],
+          [73.7970, 18.6490]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pcmc-demo-002",
+        "name": "Chinchwad Station Railway Underpass",
+        "highway": "primary",
+        "is_underpass": true,
+        "signals": {
+          "terrain": 0.85,
+          "flood_history": 0.80,
+          "drainage": 0.70
+        },
+        "threshold_mm_hr": 14.0,
+        "length_m": 450.0
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [73.7970, 18.6490],
+          [73.8010, 18.6505],
+          [73.8050, 18.6520]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pcmc-demo-003",
+        "name": "Pimpri Flyover Service Road",
+        "highway": "secondary",
+        "is_underpass": false,
+        "signals": {
+          "terrain": 0.35,
+          "flood_history": 0.30,
+          "drainage": 0.40
+        },
+        "threshold_mm_hr": 28.0,
+        "length_m": 580.0
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [73.8050, 18.6520],
+          [73.8100, 18.6540],
+          [73.8150, 18.6560]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pcmc-demo-004",
+        "name": "Bhakti-Shakti Nigdi Link Road",
+        "highway": "tertiary",
+        "is_underpass": false,
+        "signals": {
+          "terrain": 0.20,
+          "flood_history": 0.15,
+          "drainage": 0.25
+        },
+        "threshold_mm_hr": 32.0,
+        "length_m": 640.0
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [73.7850, 18.6450],
+          [73.7880, 18.6500],
+          [73.7920, 18.6550]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pcmc-demo-005",
+        "name": "Pavana Riverfront Low-Lying Causeway",
+        "highway": "residential",
+        "is_underpass": false,
+        "signals": {
+          "terrain": 0.90,
+          "flood_history": 0.85,
+          "drainage": 0.90
+        },
+        "threshold_mm_hr": 10.0,
+        "length_m": 380.0
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [73.8010, 18.6505],
+          [73.8030, 18.6460],
+          [73.8060, 18.6420]
+        ]
+      }
+    }
+  ]
+}
