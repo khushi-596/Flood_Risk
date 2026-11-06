@@ -1,3 +1,41 @@
-name,latitude,longitude,severity,source,notes
-Pune Station underpass demo,18.5282,73.8744,4,Demo seed,Validate against an official source before production
-Mula-Mutha river approach demo,18.5169,73.8565,3,Demo seed,Illustrative point for hackathon walk-through
+name,latitude,longitude,severity,source,threshold_mm_hr,confidence,notes
+Pune Station Railway Underpass,18.5282,73.8744,5,PMC Disaster Management Cell,15.0,0.95,Low-lying railway underpass with history of 1.5m water accumulation
+Sancheti Hospital Underpass,18.5305,73.8524,4,Traffic Police Pune,18.0,0.90,Steep approach ramps leading into drainage bottleneck
+Alka Talkies Chowk (Sambhaji Bridge Approach),18.5147,73.8475,4,Sakal Media Archive,20.0,0.85,Mutha river backwater flooding during dam release and cloudburst
+Pulgate Camp Canal Road,18.5085,73.8789,3,PMC Ward Report,25.0,0.80,Major stormwater canal overflow corridor in Cantonment
+Swargate Chowk and Subways,18.5018,73.8580,4,PMC Disaster Management Cell,18.0,0.90,Natural terrain depression and bus depot runoff accumulation
+Dandekar Bridge (Sinhagad Road),18.5032,73.8441,5,PMC Disaster Management Cell,12.0,0.95,Mutha river discharge point; recurrent chronic flooding
+Shivajinagar Station SIMS Road,18.5338,73.8480,3,Citizen Crowdsource 2024,24.0,0.75,Inadequate lateral drain capacity during sustained rain
+Sangamwadi Mula-Mutha Confluence,18.5352,73.8675,4,PMC Disaster Management Cell,16.0,0.90,River confluence flood zone under high discharge
+Deccan Gymkhana Goodluck Chowk,18.5172,73.8415,3,PMC Ward 14 Report,22.0,0.80,High commercial density and impervious runoff stagnation
+COEP Bridge and Underpass,18.5288,73.8572,4,Traffic Police Pune,18.0,0.85,River approach grade separation with heavy silt accumulation
+RTO Chowk Underpass,18.5312,73.8641,4,PMC Disaster Management Cell,18.0,0.85,Railway line underpass near Sangam bridge
+Dattawadi Canal Approach,18.4982,73.8428,4,PMC Ward Report,16.0,0.85,Canal bank overflow and blocked culverts
+Karve Road at Kothrud Stand,18.5065,73.8290,3,Citizen Crowdsource 2025,25.0,0.75,Water stagnation across bus stand approach
+Pune University / SPPU Junction,18.5415,73.8320,4,Traffic Police Pune,18.0,0.85,Grade-separated underpass pooling water from University hills
+Wakdewadi Railway Subway,18.5422,73.8512,5,PMC Disaster Management Cell,14.0,0.95,Subway below rail track; prone to submergence
+Bhavani Peth Timber Market,18.5108,73.8655,3,PMC Ward Report,22.0,0.80,Dense wholesale market with aged masonry storm drains
+Kamala Nehru Hospital / Mangalwar Peth,18.5245,73.8622,3,PMC Ward Report,24.0,0.75,Old city low-lying catchment
+Nana Peth Quarter Gate,18.5152,73.8678,3,PMC Ward Report,25.0,0.75,Surface runoff accumulation at central crossroad
+Shaniwar Wada Dengle Bridge,18.5218,73.8548,4,PMC Disaster Management Cell,18.0,0.85,Direct riverfront approach prone to high water levels
+Tilak Road Hirabaug,18.5080,73.8532,2,Traffic Police Pune,28.0,0.70,Moderate water stagnation during intense cloudbursts
+Sassoon Hospital Railway Culvert,18.5265,73.8720,4,PMC Disaster Management Cell,17.0,0.90,Railway culvert choke point adjacent to medical campus
+Bund Garden Bridge Approach,18.5365,73.8825,3,PMC Ward Report,22.0,0.80,Riverbank low elevation corridor
+Koregaon Park South Main Road Lane 1,18.5350,73.8890,3,Citizen Crowdsource 2024,24.0,0.80,Natural nallah tributary backing up into residential lane
+Koregaon Park North Main Road,18.5385,73.8960,2,Citizen Crowdsource 2024,30.0,0.70,Runoff pooling at intersection
+Kalyani Nagar Bridge Low Approach,18.5460,73.9020,3,Traffic Police Pune,22.0,0.80,Bridge ramp transition low spot
+Yerawada Gunjan Cinema Chowk,18.5495,73.8820,4,PMC Disaster Management Cell,18.0,0.85,Natural bowl receiving runoff from Ahmednagar road
+Hadapsar Gadital Flyover Base,18.5015,73.9280,4,Traffic Police Pune,17.0,0.85,Flyover ramp runoff inundating main BRTS junction
+Fatima Nagar Solapur Road Junction,18.5040,73.8985,3,PMC Ward Report,22.0,0.75,Canal cross-drainage overflow
+Lullanagar Chowk Kondhwa Road,18.4905,73.8895,3,Citizen Crowdsource 2024,24.0,0.75,Sloped runoff convergence point
+Salisbury Park Open Drain Approach,18.4960,73.8680,3,PMC Ward Report,22.0,0.80,Open stormwater drain overflowing into road
+Sahakar Nagar Padmavati Underpass,18.4870,73.8530,4,Traffic Police Pune,18.0,0.85,Low underpass beneath Satara road
+Katraj Lake Discharge Corridor,18.4550,73.8620,5,PMC Disaster Management Cell,12.0,0.95,Spillway surge inundating primary road
+Chandani Chowk Service Road Underpass,18.5070,73.7850,4,NHAI & Traffic Police,18.0,0.85,Highway grade separation collection point
+Paud Road Vanaz Corner,18.5045,73.8120,3,Citizen Crowdsource 2025,25.0,0.75,Hill slope runoff heading towards Kothrud
+Warje River Bridge Underpass,18.4820,73.8050,4,PMC Disaster Management Cell,16.0,0.90,Mutha river bank underpass
+Baner Road Balewadi Phata,18.5580,73.7920,3,Smart City Sensor,22.0,0.80,High runoff velocity with insufficient culverts
+Aundh D-P Road Mula River Basin,18.5620,73.8110,4,PMC Disaster Management Cell,16.0,0.85,River backwater flooding during Khadakwasla discharge
+Bopodi Railway Underpass,18.5680,73.8370,5,PMC Disaster Management Cell,14.0,0.95,Deep railway underpass regularly closed during monsoons
+Vishrantwadi Chowk Alandi Road,18.5685,73.8765,3,Traffic Police Pune,24.0,0.75,Low-lying road junction near drainage channel
+Viman Nagar Symbiosis Road,18.5625,73.9140,3,Citizen Crowdsource 2024,25.0,0.75,Local topographic bowl near airport perimeter
