@@ -1,0 +1,35 @@
+# Calibrated risk formula per competition workplan
+# R = w_s*S + w_r*R + w_h*H + w_d*D + w_c*C
+# Segment threshold: T_seg = T0 * (1 - 0.5*S - 0.3*H)
+
+model:
+  name: explainable_weighted_flood_risk
+  version: 2.0.0
+  description: >
+    Calibrated risk formula per competition workplan.
+    R = w_s*S + w_r*R + w_h*H + w_d*D + w_c*C
+    Per-segment rainfall threshold: T_seg = T0 * (1 - 0.5*S - 0.3*H)
+
+weights:
+  terrain: 0.20
+  rainfall: 0.35
+  flood_history: 0.20
+  drainage: 0.10
+  citizen_reports: 0.15
+
+bands:
+  low_max: 0.25
+  moderate_max: 0.50
+  high_max: 0.75
+  severe_max: 1.0
+
+defaults:
+  missing_signal: 0.0
+  confidence_without_observed_rainfall: 0.55
+  confidence_with_all_signals: 0.90
+  base_threshold_mm_hr: 30.0
+
+guardrails:
+  # Dry gate: on dry days without verified crowd reports, cap risk at 0.25
+  dry_day_score_cap_without_verified_report: 0.25
+  top_reason_count: 3

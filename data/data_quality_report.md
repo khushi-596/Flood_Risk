@@ -1,17 +1,17 @@
 # Pune Study Zone: Data Quality & QA Report
 
-**Generated:** 2026-11-06 05:27:29 UTC
+**Generated:** 2026-11-06 16:59:18 UTC
 
 ## 1. Road Segments Quality Summary
-- **Total Segments:** 15
-- **Total Network Coverage:** 17.03 km
-- **Mean Segment Length:** 1135.3 m (Min: 500.0 m, Max: 2600.0 m)
-- **Underpasses Identified:** 1
+- **Total Segments:** 22
+- **Total Network Coverage:** 28.03 km
+- **Mean Segment Length:** 1274.1 m (Min: 500.0 m, Max: 2900.0 m)
+- **Underpasses Identified:** 2
 - **Highways Distribution:**
 | Highway Class | Count |
 | :--- | :--- |
-| primary | 8 |
-| secondary | 6 |
+| primary | 12 |
+| secondary | 9 |
 | tertiary | 1 |
 
 ### Segments Missing / Null Fields Check:
@@ -42,14 +42,14 @@
 
 ## 3. Synthetic Citizen Hazard Reports Audit
 - **Total Seed Reports:** 50
-- **Unique Device Fingerprints:** 33
+- **Unique Device Fingerprints:** 35
 ### Report Types Distribution:
 | Hazard Type | Count |
 | :--- | :--- |
-| waterlogging | 28 |
-| blocked_drain | 11 |
-| flood | 9 |
-| pothole | 2 |
+| waterlogging | 32 |
+| blocked_drain | 8 |
+| flood | 6 |
+| pothole | 4 |
 
 ## 4. Definition of Done Compliance Check
 - [x] Road segments divided into walkable/drivable lengths with geometry validity

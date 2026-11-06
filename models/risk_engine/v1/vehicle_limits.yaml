@@ -4,18 +4,23 @@ vehicles:
     caution_at: 0.30
     wait_at: 0.45
     avoid_at: 0.60
+    label: two-wheelers
   car:
     risk_multiplier: 1.00
     caution_at: 0.40
     wait_at: 0.60
     avoid_at: 0.75
+    label: cars
   bus:
     risk_multiplier: 0.85
     caution_at: 0.48
     wait_at: 0.68
     avoid_at: 0.85
+    label: buses
   truck:
     risk_multiplier: 0.75
     caution_at: 0.52
     wait_at: 0.72
     avoid_at: 0.90
+    label: trucks
+
