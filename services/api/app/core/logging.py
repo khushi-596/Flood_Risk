@@ -32,6 +32,17 @@ def configure_logging(app_env: str = "development") -> None:
     Production:  JSONRenderer → stdout (newline-delimited JSON)
     Development: ConsoleRenderer (coloured, human-readable)
     """
+    if hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+    if hasattr(sys.stderr, "reconfigure"):
+        try:
+            sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+
     is_production = app_env == "production"
 
     shared_processors: list = [

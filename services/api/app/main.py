@@ -108,8 +108,11 @@ async def risk_alerts(websocket: WebSocket) -> None:
     try:
         while True:
             await websocket.receive_text()
-    except WebSocketDisconnect:
+    except Exception:
+        pass
+    finally:
         alert_hub.disconnect(websocket)
+
 
 
 # ── Root ──────────────────────────────────────────────────────────────────────
