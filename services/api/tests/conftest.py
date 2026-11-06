@@ -1,5 +1,6 @@
 import pytest
 
+from app.core.limiter import limiter
 from app.services.municipal import _in_memory_work_orders
 from app.services.reports import _in_memory_reports, _report_attempts, _report_counts_cache
 from app.services.weather import rain_store
@@ -14,6 +15,7 @@ def clean_test_state():
     _report_counts_cache["last_checked"] = 0.0
     _in_memory_work_orders.clear()
     rain_store.set_simulator("none")
+    limiter.reset()
     yield
     _in_memory_reports.clear()
     _report_attempts.clear()
@@ -21,3 +23,4 @@ def clean_test_state():
     _report_counts_cache["last_checked"] = 0.0
     _in_memory_work_orders.clear()
     rain_store.set_simulator("none")
+    limiter.reset()
