@@ -12,7 +12,7 @@ COPY . .
 
 # Build-time env vars (overridden at runtime via Render dashboard)
 ARG NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/v1
-ARG NEXT_PUBLIC_MAP_STYLE_URL=https://demotiles.maplibre.org/style.json
+ARG NEXT_PUBLIC_MAP_STYLE_URL=https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json
 ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
 ENV NEXT_PUBLIC_MAP_STYLE_URL=$NEXT_PUBLIC_MAP_STYLE_URL
 ENV NEXT_OUTPUT_STANDALONE=true

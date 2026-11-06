@@ -56,4 +56,4 @@ services:
       - key: NEXT_PUBLIC_API_BASE_URL
         value: https://flood-risk-api.onrender.com/v1
       - key: NEXT_PUBLIC_MAP_STYLE_URL
-        value: https://demotiles.maplibre.org/style.json
+        value: https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json
