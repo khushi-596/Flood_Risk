@@ -44,6 +44,8 @@ services:
     volumes:
       - ./data:/workspace/data:ro
       - ./models:/workspace/models:ro
+      - ./infra:/workspace/infra:ro
+      - ./alembic.ini:/workspace/alembic.ini:ro
       - ./uploads:/workspace/uploads
       - ./services/api:/app
     depends_on:
