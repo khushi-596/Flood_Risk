@@ -1,0 +1,111 @@
+{
+  "storm_name": "Pune Monsoon Cloudburst Simulation (3-Hour Flash Flood Scenario)",
+  "total_duration_minutes": 180,
+  "interval_minutes": 15,
+  "steps": [
+    {
+      "step_index": 0,
+      "minute": 0,
+      "label": "T+0m (Dry Baseline)",
+      "rainfall_mm_hour": 0.0,
+      "forecast_30m_mm_hour": 3.5,
+      "description": "Clear skies and dry roads across Pune. All road segments are within low risk (<0.25)."
+    },
+    {
+      "step_index": 1,
+      "minute": 15,
+      "label": "T+15m (Onset of Rain)",
+      "rainfall_mm_hour": 3.5,
+      "forecast_30m_mm_hour": 12.0,
+      "description": "Light to moderate drizzle begins over Shivajinagar and Deccan. Road surfaces become wet."
+    },
+    {
+      "step_index": 2,
+      "minute": 30,
+      "label": "T+30m (Building Shower)",
+      "rainfall_mm_hour": 12.0,
+      "forecast_30m_mm_hour": 28.0,
+      "description": "Rain intensifies into a moderate shower. Storm drains begin filling; waterlogging risk rising."
+    },
+    {
+      "step_index": 3,
+      "minute": 45,
+      "label": "T+45m (Heavy Downpour)",
+      "rainfall_mm_hour": 28.0,
+      "forecast_30m_mm_hour": 45.0,
+      "description": "Heavy monsoon downpour across central Pune. Pune Station Underpass approaches critical capacity."
+    },
+    {
+      "step_index": 4,
+      "minute": 60,
+      "label": "T+60m (Severe Torrent)",
+      "rainfall_mm_hour": 45.0,
+      "forecast_30m_mm_hour": 60.0,
+      "description": "Severe cloudburst conditions. Pune Station Underpass is submerged; Mula-Mutha riverbanks swell."
+    },
+    {
+      "step_index": 5,
+      "minute": 75,
+      "label": "T+75m (Peak Cloudburst Intensity)",
+      "rainfall_mm_hour": 60.0,
+      "forecast_30m_mm_hour": 50.0,
+      "description": "Peak rainfall intensity. High and severe risk alerts triggered across low-lying underpasses and bridges."
+    },
+    {
+      "step_index": 6,
+      "minute": 90,
+      "label": "T+90m (Sustained Heavy Rain)",
+      "rainfall_mm_hour": 50.0,
+      "forecast_30m_mm_hour": 32.0,
+      "description": "Storm maintains intense precipitation. Safe routing actively diverts all traffic to elevated Camp bypass."
+    },
+    {
+      "step_index": 7,
+      "minute": 105,
+      "label": "T+105m (Storm Decaying)",
+      "rainfall_mm_hour": 32.0,
+      "forecast_30m_mm_hour": 18.0,
+      "description": "Precipitation easing slightly. Drains flowing at maximum discharge capacity."
+    },
+    {
+      "step_index": 8,
+      "minute": 120,
+      "label": "T+120m (Tapering Showers)",
+      "rainfall_mm_hour": 18.0,
+      "forecast_30m_mm_hour": 7.0,
+      "description": "Showers tapering off. Water begins receding on secondary roads; underpass remains blocked."
+    },
+    {
+      "step_index": 9,
+      "minute": 135,
+      "label": "T+135m (Light Rain)",
+      "rainfall_mm_hour": 7.0,
+      "forecast_30m_mm_hour": 2.0,
+      "description": "Residual light rain. Municipal work orders dispatched to clear debris from clogged culverts."
+    },
+    {
+      "step_index": 10,
+      "minute": 150,
+      "label": "T+150m (Drizzle / Drainage)",
+      "rainfall_mm_hour": 2.0,
+      "forecast_30m_mm_hour": 0.5,
+      "description": "Drizzle ending. Surface runoff draining steadily into Mula-Mutha river."
+    },
+    {
+      "step_index": 11,
+      "minute": 165,
+      "label": "T+165m (Clearing)",
+      "rainfall_mm_hour": 0.5,
+      "forecast_30m_mm_hour": 0.0,
+      "description": "Rain has stopped. Standing water clearing; travel advice transitions back towards Caution/Go."
+    },
+    {
+      "step_index": 12,
+      "minute": 180,
+      "label": "T+180m (Post-Storm Clear)",
+      "rainfall_mm_hour": 0.0,
+      "forecast_30m_mm_hour": 0.0,
+      "description": "Storm sequence complete. Roads returned to dry baseline conditions."
+    }
+  ]
+}

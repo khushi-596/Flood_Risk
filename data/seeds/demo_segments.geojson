@@ -7,6 +7,7 @@
       "properties": {
         "segment_id": "pune-demo-001",
         "name": "Jangli Maharaj Road",
+        "highway": "primary",
         "risk_score": 0.16,
         "confidence": 0.62,
         "risk_band": "low",
@@ -14,13 +15,14 @@
         "signals": {"terrain": 0.12, "flood_history": 0.06, "drainage": 0.12},
         "length_m": 690
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8446,18.5211],[73.8490,18.5200],[73.8531,18.5194]]}
+      "geometry": {"type": "LineString", "coordinates": [[73.8446, 18.5211], [73.8490, 18.5200], [73.8531, 18.5194]]}
     },
     {
       "type": "Feature",
       "properties": {
         "segment_id": "pune-demo-002",
         "name": "Shivajinagar Station Road",
+        "highway": "secondary",
         "risk_score": 0.47,
         "confidence": 0.71,
         "risk_band": "moderate",
@@ -28,13 +30,15 @@
         "signals": {"terrain": 0.42, "flood_history": 0.75, "drainage": 0.52},
         "length_m": 600
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8476,18.5292],[73.8515,18.5274],[73.8556,18.5259]]}
+      "geometry": {"type": "LineString", "coordinates": [[73.8476, 18.5292], [73.8515, 18.5274], [73.8556, 18.5259]]}
     },
     {
       "type": "Feature",
       "properties": {
         "segment_id": "pune-demo-003",
         "name": "Pune Station Underpass",
+        "highway": "primary",
+        "is_underpass": true,
         "risk_score": 0.83,
         "confidence": 0.82,
         "risk_band": "high",
@@ -42,13 +46,14 @@
         "signals": {"terrain": 0.95, "flood_history": 0.95, "drainage": 0.80},
         "length_m": 550
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8668,18.5314],[73.8705,18.5291],[73.8744,18.5282]]}
+      "geometry": {"type": "LineString", "coordinates": [[73.8668, 18.5314], [73.8705, 18.5291], [73.8744, 18.5282]]}
     },
     {
       "type": "Feature",
       "properties": {
         "segment_id": "pune-demo-004",
         "name": "Mula-Mutha River Approach",
+        "highway": "secondary",
         "risk_score": 0.64,
         "confidence": 0.68,
         "risk_band": "high",
@@ -56,13 +61,14 @@
         "signals": {"terrain": 0.80, "flood_history": 0.82, "drainage": 0.70},
         "length_m": 500
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8504,18.5132],[73.8538,18.5150],[73.8565,18.5169]]}
+      "geometry": {"type": "LineString", "coordinates": [[73.8504, 18.5132], [73.8538, 18.5150], [73.8565, 18.5169]]}
     },
     {
       "type": "Feature",
       "properties": {
         "segment_id": "pune-demo-005",
         "name": "Koregaon Park Road",
+        "highway": "secondary",
         "risk_score": 0.29,
         "confidence": 0.58,
         "risk_band": "low",
@@ -70,7 +76,157 @@
         "signals": {"terrain": 0.26, "flood_history": 0.20, "drainage": 0.30},
         "length_m": 640
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8913,18.5375],[73.8952,18.5359],[73.8990,18.5344]]}
+      "geometry": {"type": "LineString", "coordinates": [[73.8913, 18.5375], [73.8952, 18.5359], [73.8990, 18.5344]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-006",
+        "name": "Fergusson College Road",
+        "highway": "primary",
+        "risk_score": 0.18,
+        "confidence": 0.65,
+        "risk_band": "low",
+        "reasons": ["Elevated corridor", "Well drained"],
+        "signals": {"terrain": 0.15, "flood_history": 0.08, "drainage": 0.18},
+        "length_m": 1450
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8402, 18.5168], [73.8425, 18.5230], [73.8476, 18.5292]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-007",
+        "name": "Deccan Gymkhana Link",
+        "highway": "primary",
+        "risk_score": 0.19,
+        "confidence": 0.60,
+        "risk_band": "low",
+        "reasons": ["Normal traffic flow", "No standing water history"],
+        "signals": {"terrain": 0.18, "flood_history": 0.10, "drainage": 0.15},
+        "length_m": 620
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8402, 18.5168], [73.8446, 18.5211]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-008",
+        "name": "Sancheti Connector",
+        "highway": "primary",
+        "risk_score": 0.24,
+        "confidence": 0.65,
+        "risk_band": "low",
+        "reasons": ["Moderate urban density"],
+        "signals": {"terrain": 0.22, "flood_history": 0.12, "drainage": 0.20},
+        "length_m": 780
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8531, 18.5194], [73.8556, 18.5259]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-009",
+        "name": "Sangam Bridge Road",
+        "highway": "primary",
+        "risk_score": 0.38,
+        "confidence": 0.70,
+        "risk_band": "moderate",
+        "reasons": ["River bridge approach corridor"],
+        "signals": {"terrain": 0.35, "flood_history": 0.25, "drainage": 0.40},
+        "length_m": 1350
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8556, 18.5259], [73.8610, 18.5290], [73.8668, 18.5314]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-010",
+        "name": "Dr. Ambedkar Road (Camp Bypass)",
+        "highway": "primary",
+        "risk_score": 0.14,
+        "confidence": 0.75,
+        "risk_band": "low",
+        "reasons": ["Elevated bypass corridor", "Excellent drainage"],
+        "signals": {"terrain": 0.12, "flood_history": 0.05, "drainage": 0.10},
+        "length_m": 2600
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8556, 18.5259], [73.8620, 18.5190], [73.8720, 18.5175], [73.8780, 18.5220], [73.8744, 18.5282]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-011",
+        "name": "Sassoon Bund Garden Link",
+        "highway": "primary",
+        "risk_score": 0.45,
+        "confidence": 0.68,
+        "risk_band": "moderate",
+        "reasons": ["Near railway culvert", "Moderate depression"],
+        "signals": {"terrain": 0.45, "flood_history": 0.40, "drainage": 0.50},
+        "length_m": 1050
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8744, 18.5282], [73.8820, 18.5340]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-012",
+        "name": "Bund Garden Bridge Road",
+        "highway": "secondary",
+        "risk_score": 0.32,
+        "confidence": 0.62,
+        "risk_band": "moderate",
+        "reasons": ["River bridge crossing"],
+        "signals": {"terrain": 0.30, "flood_history": 0.20, "drainage": 0.35},
+        "length_m": 1100
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8820, 18.5340], [73.8913, 18.5375]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-013",
+        "name": "North Main Road (Camp to KP Safe Link)",
+        "highway": "secondary",
+        "risk_score": 0.15,
+        "confidence": 0.70,
+        "risk_band": "low",
+        "reasons": ["Dry ridge alignment", "High elevation above river"],
+        "signals": {"terrain": 0.15, "flood_history": 0.06, "drainage": 0.12},
+        "length_m": 2200
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8780, 18.5220], [73.8860, 18.5260], [73.8952, 18.5359]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-014",
+        "name": "Shivaji Road",
+        "highway": "tertiary",
+        "risk_score": 0.42,
+        "confidence": 0.66,
+        "risk_band": "moderate",
+        "reasons": ["Historic dense settlement corridor"],
+        "signals": {"terrain": 0.38, "flood_history": 0.45, "drainage": 0.42},
+        "length_m": 1500
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8556, 18.5259], [73.8530, 18.5195], [73.8504, 18.5132]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-015",
+        "name": "Tilak Road",
+        "highway": "secondary",
+        "risk_score": 0.21,
+        "confidence": 0.64,
+        "risk_band": "low",
+        "reasons": ["Gentle gradient", "Standard storm drains"],
+        "signals": {"terrain": 0.20, "flood_history": 0.15, "drainage": 0.18},
+        "length_m": 1400
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8504, 18.5132], [73.8450, 18.5110], [73.8402, 18.5168]]}
     }
   ]
 }

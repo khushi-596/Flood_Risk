@@ -54,7 +54,25 @@ class CrowdReportSummary(BaseModel):
 
 
 class RainSimulationRequest(BaseModel):
-    level: RainLevel
+    level: RainLevel | None = None
+    rainfall_mm_hour: float | None = Field(default=None, ge=0.0, le=200.0)
+    forecast_30m_mm_hour: float | None = Field(default=None, ge=0.0, le=200.0)
+
+
+class StormPlaybackStep(BaseModel):
+    step_index: int
+    minute: int
+    label: str
+    rainfall_mm_hour: float
+    forecast_30m_mm_hour: float
+    description: str
+
+
+class StormPlaybackResponse(BaseModel):
+    storm_name: str
+    total_duration_minutes: int
+    steps: list[StormPlaybackStep]
+    current_step: int | None = None
 
 
 class RainStateResponse(BaseModel):
@@ -64,6 +82,8 @@ class RainStateResponse(BaseModel):
     source: Literal["simulated", "live", "cached"]
     is_stale: bool
     updated_at: datetime
+    playback_step: int | None = None
+
 
 
 class Coordinate(BaseModel):

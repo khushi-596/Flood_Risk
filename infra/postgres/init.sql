@@ -1,6 +1,52 @@
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
+CREATE TABLE IF NOT EXISTS segments (
+  seg_id TEXT PRIMARY KEY,
+  osm_way_id TEXT,
+  name TEXT NOT NULL DEFAULT 'Unnamed road',
+  highway TEXT NOT NULL DEFAULT 'unclassified',
+  geom GEOMETRY(LineString, 4326) NOT NULL,
+  length_m DOUBLE PRECISION NOT NULL DEFAULT 0,
+  is_underpass BOOLEAN NOT NULL DEFAULT FALSE,
+  elev_mean DOUBLE PRECISION,
+  slope DOUBLE PRECISION,
+  depression_idx DOUBLE PRECISION,
+  drain_dist_m DOUBLE PRECISION,
+  signal_terrain DOUBLE PRECISION NOT NULL DEFAULT 0,
+  signal_flood_history DOUBLE PRECISION NOT NULL DEFAULT 0,
+  signal_drainage DOUBLE PRECISION NOT NULL DEFAULT 0,
+  threshold_mm_hr DOUBLE PRECISION NOT NULL DEFAULT 30.0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS segments_geom_gist_idx ON segments USING GIST (geom);
+CREATE INDEX IF NOT EXISTS segments_highway_idx ON segments (highway);
+
+CREATE TABLE IF NOT EXISTS hotspots_hist (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  geom GEOMETRY(Point, 4326) NOT NULL,
+  severity SMALLINT NOT NULL CHECK (severity BETWEEN 1 AND 5),
+  source TEXT NOT NULL DEFAULT 'manual',
+  threshold_mm_hr DOUBLE PRECISION,
+  confidence DOUBLE PRECISION DEFAULT 0.5,
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS hotspots_hist_geom_gist_idx ON hotspots_hist USING GIST (geom);
+
+CREATE TABLE IF NOT EXISTS segment_risk_current (
+  seg_id TEXT PRIMARY KEY REFERENCES segments(seg_id) ON DELETE CASCADE,
+  risk_now DOUBLE PRECISION NOT NULL DEFAULT 0,
+  risk_30 DOUBLE PRECISION NOT NULL DEFAULT 0,
+  risk_band TEXT NOT NULL DEFAULT 'low',
+  confidence DOUBLE PRECISION NOT NULL DEFAULT 0.55,
+  factors JSONB NOT NULL DEFAULT '{}',
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS citizen_reports (
   id UUID PRIMARY KEY,
   segment_id TEXT NOT NULL,
