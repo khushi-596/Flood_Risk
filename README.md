@@ -187,7 +187,7 @@ All routes are mounted under both the primary `/v1` prefix and the spec-complian
 ### Test Suite Execution
 
 ```bash
-# Run all 37 tests (zero running database or Redis required)
+# Run all 43 tests (zero running database or Redis required)
 pytest services/api/tests -v
 
 # Run Schemathesis contract & schema conformance tests

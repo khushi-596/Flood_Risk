@@ -13,7 +13,7 @@ The backend is engineered for **resilient, offline-tolerant execution**:
 
 ---
 
-## 2. Test Suite Matrix (37 Total Tests)
+## 2. Test Suite Matrix (43 Total Tests)
 
 | Test Module | Tests | Focus Area & Key Invariants Verified |
 | :--- | :---: | :--- |
@@ -23,10 +23,10 @@ The backend is engineered for **resilient, offline-tolerant execution**:
 | `test_weather.py` | 4 | Weather endpoints & aliases, custom rainfall simulator overrides, deterministic storm playback lifecycle (ramp-up $\to$ peak $\to$ decay), travel advice endpoint |
 | `test_crowd_and_municipal.py` | 5 | KNN nearest-segment snapping, 3-device/150m auto-verification clustering, work-order lifecycle clearing crowd risk, drainage failure detection, photo magic byte/size validation |
 | `test_part_c.py` | 7 | `/api/v1` prefix alias parity with `/v1`, root metadata, Structlog structured logger, rate limiting headers, HTTP 429 Too Many Requests verification on limit breach |
-| `test_contract.py` | 3 | Complete OpenAPI 3.1 schema structure, tags/summary completeness, Schemathesis property-based contract fuzzing |
-| `test_failure_modes.py` | 6 | PostGIS offline fallback to seed dataset, Redis offline fallback to in-memory TTL cache, Open-Meteo timeout handling, malformed bbox handling, off-grid routing point snapping, unauthorized municipal 401s |
+| `test_contract.py` | 4 | Complete OpenAPI 3.1 schema structure, tags/summary completeness, Schemathesis property-based fuzzing, Schemathesis POST response schema validation |
+| `test_failure_modes.py` | 11 | PostGIS offline fallback, Redis offline fallback, Open-Meteo timeout handling, malformed bbox handling, off-grid routing point snapping, unauthorized municipal 401s, photo empty/spoof/size checks, playback out-of-bounds, extreme weather numeric monotonicity, JWT tampering rejection, WebSocket lifecycle |
 
-**Total:** 37 passed in ~15 seconds.
+**Total:** 43 passed in ~11 seconds.
 
 ---
 

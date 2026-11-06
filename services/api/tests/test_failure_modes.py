@@ -135,3 +135,71 @@ def test_unauthorized_municipal_access():
 
     res3 = client.get("/v1/municipal/hotspots", headers={"Authorization": "Bearer invalid_token"})
     assert res3.status_code == 401
+
+
+def test_photo_upload_spoofed_mime_and_size_bounds():
+    """Validates that corrupt, empty, spoofed, or oversized photos are rejected."""
+    # 1. Zero-byte empty file
+    res_empty = client.post(
+        "/v1/reports/photo",
+        files={"file": ("empty.jpg", b"", "image/jpeg")},
+    )
+    assert res_empty.status_code == 400
+
+    # 2. Text file spoofed with .jpg extension (fails magic byte check)
+    res_spoof = client.post(
+        "/v1/reports/photo",
+        files={"file": ("fake.jpg", b"This is just plain text, not a JPEG image", "image/jpeg")},
+    )
+    assert res_spoof.status_code == 400
+    assert "Invalid image" in res_spoof.json().get("detail", "")
+
+    # 3. Oversized file (> 3MB limit)
+    oversized_data = b"\xFF\xD8\xFF\xE0" + b"\x00" * (3 * 1024 * 1024 + 1024)
+    res_over = client.post(
+        "/v1/reports/photo",
+        files={"file": ("huge.jpg", oversized_data, "image/jpeg")},
+    )
+    assert res_over.status_code == 413
+
+
+def test_playback_step_out_of_bounds_handling():
+    """Step indexes outside valid range must return 400 rather than 500."""
+    res_high = client.post("/v1/rain/playback/999")
+    assert res_high.status_code == 400
+
+    res_neg = client.post("/v1/rain/playback/-1")
+    assert res_neg.status_code == 400
+
+
+def test_extreme_rainfall_monotonic_ceiling():
+    """Extremely high rainfall (e.g. 500 mm/h cloudburst) caps at 1.0 without numeric errors."""
+    scored_normal = scored_segments(45.0)
+    scored_extreme = scored_segments(500.0)
+
+    for f_norm, f_ext in zip(scored_normal["features"], scored_extreme["features"]):
+        score_norm = f_norm["properties"]["risk_score"]
+        score_ext = f_ext["properties"]["risk_score"]
+        assert score_ext >= score_norm
+        assert 0.0 <= score_ext <= 1.0
+
+
+def test_jwt_tampered_signature_rejection():
+    """Tampered token payloads or altered signatures must be strictly rejected."""
+    tampered = (
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
+        "eyJzdWIiOiJzdGFmZkBwdW5lLmdvdi5pbiIsInJvbGUiOiJzdGFmZiJ9."
+        "invalid_signature_bytes_here"
+    )
+    res = client.get("/v1/municipal/reports", headers={"Authorization": f"Bearer {tampered}"})
+    assert res.status_code == 401
+
+
+def test_websocket_lifecycle_and_abrupt_disconnect():
+    """WebSocket alert connection connects cleanly and tolerates sudden disconnection."""
+    with client.websocket_connect("/v1/ws/alerts") as ws:
+        greeting = ws.receive_json()
+        assert greeting["type"] == "connected"
+        # Send heartbeat text ping
+        ws.send_text("ping")
+        # Abrupt disconnect on exit context manager

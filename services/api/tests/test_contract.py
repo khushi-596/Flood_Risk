@@ -71,3 +71,34 @@ def test_schemathesis_contract_fuzzing():
         res = client.get(case.formatted_path)
         assert res.status_code < 500
         assert res.status_code == 200
+
+
+def test_schemathesis_post_endpoints_contract_validation():
+    """Verify that POST responses conform to the OpenAPI schema."""
+    schema = schemathesis.openapi.from_dict(app.openapi())
+
+    # 1. Routes compare
+    op_route = schema.find_operation_by_path(path="/v1/routes/compare", method="post")
+    assert op_route is not None
+    payload_route = {
+        "origin": {"longitude": 73.8448, "latitude": 18.5212},
+        "destination": {"longitude": 73.8740, "latitude": 18.5285},
+        "vehicle": "car",
+    }
+    res_route = client.post("/v1/routes/compare", json=payload_route)
+    assert res_route.status_code == 200
+    op_route.validate_response(res_route)
+
+    # 2. Travel advice
+    op_advice = schema.find_operation_by_path(path="/v1/travel-advice", method="post")
+    assert op_advice is not None
+    res_advice = client.post("/v1/travel-advice", json={"vehicle": "two_wheeler"})
+    assert res_advice.status_code == 200
+    op_advice.validate_response(res_advice)
+
+    # 3. Rain simulator
+    op_rain = schema.find_operation_by_path(path="/v1/rain/simulate", method="post")
+    assert op_rain is not None
+    res_rain = client.post("/v1/rain/simulate", json={"level": "heavy"})
+    assert res_rain.status_code == 200
+    op_rain.validate_response(res_rain)

@@ -355,10 +355,25 @@ async def save_report_photo(upload_file: UploadFile) -> str:
         )
 
     content = await upload_file.read()
+    if not content or len(content) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Uploaded photo file is empty.",
+        )
     if len(content) > MAX_PHOTO_BYTES:
         raise HTTPException(
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
             detail=f"Photo exceeds 3 MB limit (received {len(content) / (1024 * 1024):.1f} MB).",
+        )
+
+    # Magic byte signature validation
+    is_jpeg = content.startswith(b"\xFF\xD8\xFF")
+    is_png = content.startswith(b"\x89PNG\r\n\x1a\n")
+    is_webp = len(content) >= 12 and content[:4] == b"RIFF" and content[8:12] == b"WEBP"
+    if not (is_jpeg or is_png or is_webp):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid image format: file contents do not match image header signatures.",
         )
 
     ext = ".jpg" if "jpeg" in content_type else ".png" if "png" in content_type else ".webp"
