@@ -1,0 +1,12 @@
+__pycache__
+.git
+*.md
+.env*
+!.env.example
+data/raw
+data/cache
+uploads
+.venv
+venv
+apps/web/node_modules
+apps/web/.next

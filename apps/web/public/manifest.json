@@ -1,0 +1,16 @@
+{
+  "name": "FloodAware Pune",
+  "short_name": "FloodAware",
+  "description": "Real-time flood risk navigation for Pune",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0c4a6e",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
