@@ -1,5 +1,6 @@
 """Road-segment retrieval with PostGIS spatial queries and JSON seed fallback."""
 
+import hashlib
 import json
 import logging
 import math
@@ -11,10 +12,18 @@ from typing import Any
 import psycopg
 
 from app.core.config import get_settings
+from app.core.redis import cache_delete_pattern, cache_get_json, cache_set_json
 from app.services.risk_engine import calculate_risk, segment_threshold, rainfall_pressure
 from app.services.weather import rainfall_signal
 
 logger = logging.getLogger(__name__)
+
+_SEGMENT_CACHE_TTL = 30  # seconds
+
+
+def invalidate_segment_cache() -> None:
+    """Purge all cached segment results (call after report or work-order mutations)."""
+    cache_delete_pattern("segments:*")
 
 
 @dataclass(frozen=True)
@@ -152,13 +161,29 @@ def scored_segments(
     verified_reports: dict[str, int] | None = None,
     bbox: tuple[float, float, float, float] | None = None,
 ) -> dict[str, Any]:
-    """Apply current rain and verified-report signals to every road feature."""
-    collection = list_segments(bbox)
+    """Apply current rain and verified-report signals to every road feature.
+
+    Results are cached for 30 s keyed by rainfall, bbox, and report-count fingerprint
+    so repeated calls within the same polling cycle skip recomputation.
+    """
     if verified_reports is None:
         from app.services.reports import verified_report_counts
         report_counts = verified_report_counts()
     else:
         report_counts = verified_reports
+
+    # Build a stable, short cache key
+    report_hash = hashlib.md5(
+        json.dumps(sorted(report_counts.items()), separators=(",", ":")).encode()
+    ).hexdigest()[:8]
+    bbox_str = f"{bbox[0]:.4f},{bbox[1]:.4f},{bbox[2]:.4f},{bbox[3]:.4f}" if bbox else "none"
+    cache_key = f"segments:{rainfall_mm_hour:.1f}:{bbox_str}:{report_hash}"
+
+    cached = cache_get_json(cache_key)
+    if cached is not None:
+        return cached
+
+    collection = list_segments(bbox)
     is_dry_day = rainfall_mm_hour < 1.0
 
     for feature in collection["features"]:
@@ -186,6 +211,8 @@ def scored_segments(
                 "active_verified_reports": active_reports,
             }
         )
+
+    cache_set_json(cache_key, collection, ttl_sec=_SEGMENT_CACHE_TTL)
     return collection
 
 

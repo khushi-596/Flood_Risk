@@ -8,11 +8,14 @@ Implements multi-criteria Dijkstra pathfinding:
 
 from __future__ import annotations
 
+import hashlib
+import json
 import math
 from typing import Any
 
 import networkx as nx
 
+from app.core.redis import cache_get_json, cache_set_json
 from app.schemas import (
     Coordinate,
     RouteOption,
@@ -27,6 +30,9 @@ from app.services.reports import verified_report_counts
 from app.services.risk_engine import load_vehicle_limits
 from app.services.segments import scored_segments
 from app.services.weather import rain_store
+
+_ROUTE_CACHE_TTL = 60  # seconds
+
 
 # Default speeds by highway classification (km/h)
 HIGHWAY_SPEEDS: dict[str, float] = {
@@ -250,8 +256,31 @@ def _compute_route_option(
 
 
 def compare_routes(request: RouteRequest) -> RouteResponse:
-    """Compare Fast, Safe, and Balanced routes over the risk-weighted graph."""
+    """Compare Fast, Safe, and Balanced routes over the risk-weighted graph.
+
+    Results are cached for 60 s keyed by origin, destination, vehicle, and current rainfall
+    so identical requests within the same rain window skip the Dijkstra computation.
+    """
     rain = rain_store.response()
+
+    # Stable cache key — includes rainfall so rain changes invalidate old entries
+    key_data = json.dumps(
+        {
+            "origin": [request.origin.longitude, request.origin.latitude],
+            "dest": [request.destination.longitude, request.destination.latitude],
+            "vehicle": request.vehicle,
+            "rain": round(rain.rainfall_mm_hour, 1),
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    cache_key = f"route:{hashlib.md5(key_data.encode()).hexdigest()}"
+
+    cached = cache_get_json(cache_key)
+    if cached is not None:
+        # Reconstruct Pydantic model from cached dict
+        return RouteResponse.model_validate(cached)
+
     collection = scored_segments(rain.rainfall_mm_hour, verified_report_counts())
     features = collection.get("features", [])
 
@@ -288,7 +317,9 @@ def compare_routes(request: RouteRequest) -> RouteResponse:
     elif fast_opt.highest_risk <= 0.25:
         fast_opt.recommendation = "Recommended: roads are dry and clear; fastest route is optimal."
 
-    return RouteResponse(vehicle=request.vehicle, rain=rain, routes=routes)
+    response = RouteResponse(vehicle=request.vehicle, rain=rain, routes=routes)
+    cache_set_json(cache_key, response.model_dump(mode="json"), ttl_sec=_ROUTE_CACHE_TTL)
+    return response
 
 
 def travel_advice(request: TravelAdviceRequest) -> TravelAdviceResponse:

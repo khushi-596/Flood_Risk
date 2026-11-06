@@ -75,6 +75,8 @@ class _RainState:
 class RainStateStore:
     """Central store for current rainfall, 30m forecast, and playback simulation."""
 
+    _REDIS_KEY = "rain:sim:state"
+
     def __init__(self) -> None:
         self._state = _RainState(
             level="none",
@@ -88,6 +90,45 @@ class RainStateStore:
         self._simulated = False
         self._history: list[tuple[datetime, float]] = []
         self._playback_data: dict[str, Any] | None = None
+        self._restore_sim_state_from_redis()
+
+    def _restore_sim_state_from_redis(self) -> None:
+        """On startup, restore any previously set simulation override from Redis."""
+        try:
+            from app.core.redis import cache_get_json
+            saved = cache_get_json(self._REDIS_KEY)
+            if saved and saved.get("source") == "simulated":
+                self._state = _RainState(
+                    level=saved["level"],
+                    rainfall_mm_hour=float(saved["rainfall_mm_hour"]),
+                    forecast_30m_mm_hour=float(saved["forecast_30m_mm_hour"]),
+                    source="simulated",
+                    is_stale=False,
+                    updated_at=datetime.now(timezone.utc),
+                    playback_step=saved.get("playback_step"),
+                )
+                self._simulated = True
+        except Exception:
+            pass  # Redis offline or missing key — start fresh
+
+    def _persist_sim_state_to_redis(self) -> None:
+        """Write current simulated state to Redis so other workers pick it up."""
+        try:
+            from app.core.redis import cache_set_json
+            state = self._state
+            cache_set_json(
+                self._REDIS_KEY,
+                {
+                    "level": state.level,
+                    "rainfall_mm_hour": state.rainfall_mm_hour,
+                    "forecast_30m_mm_hour": state.forecast_30m_mm_hour,
+                    "source": state.source,
+                    "playback_step": state.playback_step,
+                },
+                ttl_sec=86400,  # 24-hour TTL — reset if no activity
+            )
+        except Exception:
+            pass  # Redis offline — in-process state still works
 
     def _load_playback_data(self) -> dict[str, Any]:
         if self._playback_data is None:
@@ -142,6 +183,13 @@ class RainStateStore:
             playback_step=None,
         )
         self._simulated = True
+        self._persist_sim_state_to_redis()
+        # Invalidate segment risk cache so next request scores against new rain level
+        try:
+            from app.services.segments import invalidate_segment_cache
+            invalidate_segment_cache()
+        except Exception:
+            pass
         return self.response()
 
     def set_custom(self, rainfall_mm_hour: float, forecast_30m: float | None = None) -> RainStateResponse:
@@ -156,6 +204,12 @@ class RainStateStore:
             playback_step=None,
         )
         self._simulated = True
+        self._persist_sim_state_to_redis()
+        try:
+            from app.services.segments import invalidate_segment_cache
+            invalidate_segment_cache()
+        except Exception:
+            pass
         return self.response()
 
     def set_playback_step(self, step_index: int) -> RainStateResponse:
@@ -178,10 +232,24 @@ class RainStateStore:
             playback_step=step_index,
         )
         self._simulated = True
+        self._persist_sim_state_to_redis()
+        try:
+            from app.services.segments import invalidate_segment_cache
+            invalidate_segment_cache()
+        except Exception:
+            pass
         return self.response()
 
     def reset_to_live(self) -> None:
         self._simulated = False
+        # Clear shared sim state from Redis so other workers stop using it
+        try:
+            from app.core.redis import cache_delete_pattern
+            cache_delete_pattern("rain:sim:state")
+            from app.services.segments import invalidate_segment_cache
+            invalidate_segment_cache()
+        except Exception:
+            pass
 
     def _record_to_db(self, rainfall: float, forecast_30m: float, source: str, is_stale: bool) -> None:
         """Best-effort persistence to weather_observations table."""
