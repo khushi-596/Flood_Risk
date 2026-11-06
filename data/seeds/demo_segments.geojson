@@ -11,11 +11,34 @@
         "risk_score": 0.16,
         "confidence": 0.62,
         "risk_band": "low",
-        "reasons": ["Dry baseline conditions", "No verified active report"],
-        "signals": {"terrain": 0.12, "flood_history": 0.06, "drainage": 0.12},
+        "reasons": [
+          "Dry baseline conditions",
+          "No verified active report"
+        ],
+        "signals": {
+          "terrain": 0.12,
+          "flood_history": 0.06,
+          "drainage": 0.12
+        },
         "length_m": 690
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8446, 18.5211], [73.8490, 18.5200], [73.8531, 18.5194]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8446,
+            18.5211
+          ],
+          [
+            73.849,
+            18.52
+          ],
+          [
+            73.8531,
+            18.5194
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -26,11 +49,34 @@
         "risk_score": 0.47,
         "confidence": 0.71,
         "risk_band": "moderate",
-        "reasons": ["Historic waterlogging signal", "Near a drainage corridor"],
-        "signals": {"terrain": 0.42, "flood_history": 0.75, "drainage": 0.52},
+        "reasons": [
+          "Historic waterlogging signal",
+          "Near a drainage corridor"
+        ],
+        "signals": {
+          "terrain": 0.42,
+          "flood_history": 0.75,
+          "drainage": 0.52
+        },
         "length_m": 600
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8476, 18.5292], [73.8515, 18.5274], [73.8556, 18.5259]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8476,
+            18.5292
+          ],
+          [
+            73.8515,
+            18.5274
+          ],
+          [
+            73.8556,
+            18.5259
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -42,11 +88,35 @@
         "risk_score": 0.83,
         "confidence": 0.82,
         "risk_band": "high",
-        "reasons": ["Low-lying underpass", "Historic flood hotspot", "Drainage is nearby"],
-        "signals": {"terrain": 0.95, "flood_history": 0.95, "drainage": 0.80},
+        "reasons": [
+          "Low-lying underpass",
+          "Historic flood hotspot",
+          "Drainage is nearby"
+        ],
+        "signals": {
+          "terrain": 0.95,
+          "flood_history": 0.95,
+          "drainage": 0.8
+        },
         "length_m": 550
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8668, 18.5314], [73.8705, 18.5291], [73.8744, 18.5282]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8668,
+            18.5314
+          ],
+          [
+            73.8705,
+            18.5291
+          ],
+          [
+            73.8744,
+            18.5282
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -57,11 +127,35 @@
         "risk_score": 0.64,
         "confidence": 0.68,
         "risk_band": "high",
-        "reasons": ["Low elevation relative to surroundings", "Close to stream", "Known flood-prone area"],
-        "signals": {"terrain": 0.80, "flood_history": 0.82, "drainage": 0.70},
+        "reasons": [
+          "Low elevation relative to surroundings",
+          "Close to stream",
+          "Known flood-prone area"
+        ],
+        "signals": {
+          "terrain": 0.8,
+          "flood_history": 0.82,
+          "drainage": 0.7
+        },
         "length_m": 500
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8504, 18.5132], [73.8538, 18.5150], [73.8565, 18.5169]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8504,
+            18.5132
+          ],
+          [
+            73.8538,
+            18.515
+          ],
+          [
+            73.8565,
+            18.5169
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -72,11 +166,34 @@
         "risk_score": 0.29,
         "confidence": 0.58,
         "risk_band": "low",
-        "reasons": ["Moderate slope", "No active crowd reports"],
-        "signals": {"terrain": 0.26, "flood_history": 0.20, "drainage": 0.30},
+        "reasons": [
+          "Moderate slope",
+          "No active crowd reports"
+        ],
+        "signals": {
+          "terrain": 0.26,
+          "flood_history": 0.2,
+          "drainage": 0.3
+        },
         "length_m": 640
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8913, 18.5375], [73.8952, 18.5359], [73.8990, 18.5344]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8913,
+            18.5375
+          ],
+          [
+            73.8952,
+            18.5359
+          ],
+          [
+            73.899,
+            18.5344
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -87,11 +204,34 @@
         "risk_score": 0.18,
         "confidence": 0.65,
         "risk_band": "low",
-        "reasons": ["Elevated corridor", "Well drained"],
-        "signals": {"terrain": 0.15, "flood_history": 0.08, "drainage": 0.18},
+        "reasons": [
+          "Elevated corridor",
+          "Well drained"
+        ],
+        "signals": {
+          "terrain": 0.15,
+          "flood_history": 0.08,
+          "drainage": 0.18
+        },
         "length_m": 1450
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8402, 18.5168], [73.8425, 18.5230], [73.8476, 18.5292]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8402,
+            18.5168
+          ],
+          [
+            73.8425,
+            18.523
+          ],
+          [
+            73.8476,
+            18.5292
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -100,13 +240,32 @@
         "name": "Deccan Gymkhana Link",
         "highway": "primary",
         "risk_score": 0.19,
-        "confidence": 0.60,
+        "confidence": 0.6,
         "risk_band": "low",
-        "reasons": ["Normal traffic flow", "No standing water history"],
-        "signals": {"terrain": 0.18, "flood_history": 0.10, "drainage": 0.15},
+        "reasons": [
+          "Normal traffic flow",
+          "No standing water history"
+        ],
+        "signals": {
+          "terrain": 0.18,
+          "flood_history": 0.1,
+          "drainage": 0.15
+        },
         "length_m": 620
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8402, 18.5168], [73.8446, 18.5211]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8402,
+            18.5168
+          ],
+          [
+            73.8446,
+            18.5211
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -117,11 +276,29 @@
         "risk_score": 0.24,
         "confidence": 0.65,
         "risk_band": "low",
-        "reasons": ["Moderate urban density"],
-        "signals": {"terrain": 0.22, "flood_history": 0.12, "drainage": 0.20},
+        "reasons": [
+          "Moderate urban density"
+        ],
+        "signals": {
+          "terrain": 0.22,
+          "flood_history": 0.12,
+          "drainage": 0.2
+        },
         "length_m": 780
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8531, 18.5194], [73.8556, 18.5259]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8531,
+            18.5194
+          ],
+          [
+            73.8556,
+            18.5259
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -130,13 +307,35 @@
         "name": "Sangam Bridge Road",
         "highway": "primary",
         "risk_score": 0.38,
-        "confidence": 0.70,
+        "confidence": 0.7,
         "risk_band": "moderate",
-        "reasons": ["River bridge approach corridor"],
-        "signals": {"terrain": 0.35, "flood_history": 0.25, "drainage": 0.40},
+        "reasons": [
+          "River bridge approach corridor"
+        ],
+        "signals": {
+          "terrain": 0.35,
+          "flood_history": 0.25,
+          "drainage": 0.4
+        },
         "length_m": 1350
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8556, 18.5259], [73.8610, 18.5290], [73.8668, 18.5314]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8556,
+            18.5259
+          ],
+          [
+            73.861,
+            18.529
+          ],
+          [
+            73.8668,
+            18.5314
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -147,11 +346,42 @@
         "risk_score": 0.14,
         "confidence": 0.75,
         "risk_band": "low",
-        "reasons": ["Elevated bypass corridor", "Excellent drainage"],
-        "signals": {"terrain": 0.12, "flood_history": 0.05, "drainage": 0.10},
+        "reasons": [
+          "Elevated bypass corridor",
+          "Excellent drainage"
+        ],
+        "signals": {
+          "terrain": 0.12,
+          "flood_history": 0.05,
+          "drainage": 0.1
+        },
         "length_m": 2600
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8556, 18.5259], [73.8620, 18.5190], [73.8720, 18.5175], [73.8780, 18.5220], [73.8744, 18.5282]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8556,
+            18.5259
+          ],
+          [
+            73.862,
+            18.519
+          ],
+          [
+            73.872,
+            18.5175
+          ],
+          [
+            73.878,
+            18.522
+          ],
+          [
+            73.8744,
+            18.5282
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -162,11 +392,30 @@
         "risk_score": 0.45,
         "confidence": 0.68,
         "risk_band": "moderate",
-        "reasons": ["Near railway culvert", "Moderate depression"],
-        "signals": {"terrain": 0.45, "flood_history": 0.40, "drainage": 0.50},
+        "reasons": [
+          "Near railway culvert",
+          "Moderate depression"
+        ],
+        "signals": {
+          "terrain": 0.45,
+          "flood_history": 0.4,
+          "drainage": 0.5
+        },
         "length_m": 1050
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8744, 18.5282], [73.8820, 18.5340]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8744,
+            18.5282
+          ],
+          [
+            73.882,
+            18.534
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -177,11 +426,29 @@
         "risk_score": 0.32,
         "confidence": 0.62,
         "risk_band": "moderate",
-        "reasons": ["River bridge crossing"],
-        "signals": {"terrain": 0.30, "flood_history": 0.20, "drainage": 0.35},
+        "reasons": [
+          "River bridge crossing"
+        ],
+        "signals": {
+          "terrain": 0.3,
+          "flood_history": 0.2,
+          "drainage": 0.35
+        },
         "length_m": 1100
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8820, 18.5340], [73.8913, 18.5375]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.882,
+            18.534
+          ],
+          [
+            73.8913,
+            18.5375
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -190,13 +457,36 @@
         "name": "North Main Road (Camp to KP Safe Link)",
         "highway": "secondary",
         "risk_score": 0.15,
-        "confidence": 0.70,
+        "confidence": 0.7,
         "risk_band": "low",
-        "reasons": ["Dry ridge alignment", "High elevation above river"],
-        "signals": {"terrain": 0.15, "flood_history": 0.06, "drainage": 0.12},
+        "reasons": [
+          "Dry ridge alignment",
+          "High elevation above river"
+        ],
+        "signals": {
+          "terrain": 0.15,
+          "flood_history": 0.06,
+          "drainage": 0.12
+        },
         "length_m": 2200
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8780, 18.5220], [73.8860, 18.5260], [73.8952, 18.5359]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.878,
+            18.522
+          ],
+          [
+            73.886,
+            18.526
+          ],
+          [
+            73.8952,
+            18.5359
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -207,11 +497,33 @@
         "risk_score": 0.42,
         "confidence": 0.66,
         "risk_band": "moderate",
-        "reasons": ["Historic dense settlement corridor"],
-        "signals": {"terrain": 0.38, "flood_history": 0.45, "drainage": 0.42},
+        "reasons": [
+          "Historic dense settlement corridor"
+        ],
+        "signals": {
+          "terrain": 0.38,
+          "flood_history": 0.45,
+          "drainage": 0.42
+        },
         "length_m": 1500
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8556, 18.5259], [73.8530, 18.5195], [73.8504, 18.5132]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8556,
+            18.5259
+          ],
+          [
+            73.853,
+            18.5195
+          ],
+          [
+            73.8504,
+            18.5132
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -222,11 +534,34 @@
         "risk_score": 0.21,
         "confidence": 0.64,
         "risk_band": "low",
-        "reasons": ["Gentle gradient", "Standard storm drains"],
-        "signals": {"terrain": 0.20, "flood_history": 0.15, "drainage": 0.18},
+        "reasons": [
+          "Gentle gradient",
+          "Standard storm drains"
+        ],
+        "signals": {
+          "terrain": 0.2,
+          "flood_history": 0.15,
+          "drainage": 0.18
+        },
         "length_m": 1400
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8504, 18.5132], [73.8450, 18.5110], [73.8402, 18.5168]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8504,
+            18.5132
+          ],
+          [
+            73.845,
+            18.511
+          ],
+          [
+            73.8402,
+            18.5168
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -235,13 +570,36 @@
         "name": "Karve Road (Kothrud to Deccan)",
         "highway": "primary",
         "risk_score": 0.18,
-        "confidence": 0.70,
+        "confidence": 0.7,
         "risk_band": "low",
-        "reasons": ["Elevated ridge corridor", "Major arterial drainage"],
-        "signals": {"terrain": 0.15, "flood_history": 0.10, "drainage": 0.15},
+        "reasons": [
+          "Elevated ridge corridor",
+          "Major arterial drainage"
+        ],
+        "signals": {
+          "terrain": 0.15,
+          "flood_history": 0.1,
+          "drainage": 0.15
+        },
         "length_m": 2900
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8150, 18.5020], [73.8270, 18.5090], [73.8402, 18.5168]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.815,
+            18.502
+          ],
+          [
+            73.827,
+            18.509
+          ],
+          [
+            73.8402,
+            18.5168
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -252,11 +610,29 @@
         "risk_score": 0.22,
         "confidence": 0.65,
         "risk_band": "low",
-        "reasons": ["Moderate slope descending from hills"],
-        "signals": {"terrain": 0.20, "flood_history": 0.15, "drainage": 0.20},
+        "reasons": [
+          "Moderate slope descending from hills"
+        ],
+        "signals": {
+          "terrain": 0.2,
+          "flood_history": 0.15,
+          "drainage": 0.2
+        },
         "length_m": 1300
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8050, 18.5060], [73.8150, 18.5020]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.805,
+            18.506
+          ],
+          [
+            73.815,
+            18.502
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -268,11 +644,34 @@
         "risk_score": 0.55,
         "confidence": 0.78,
         "risk_band": "high",
-        "reasons": ["Natural terrain depression", "Bus depot runoff accumulation"],
-        "signals": {"terrain": 0.70, "flood_history": 0.75, "drainage": 0.65},
+        "reasons": [
+          "Natural terrain depression",
+          "Bus depot runoff accumulation"
+        ],
+        "signals": {
+          "terrain": 0.7,
+          "flood_history": 0.75,
+          "drainage": 0.65
+        },
         "length_m": 1100
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8580, 18.5018], [73.8540, 18.5075], [73.8504, 18.5132]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.858,
+            18.5018
+          ],
+          [
+            73.854,
+            18.5075
+          ],
+          [
+            73.8504,
+            18.5132
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -280,14 +679,37 @@
         "segment_id": "pune-demo-019",
         "name": "Shankarsheth Road (Swargate to Camp Bypass)",
         "highway": "primary",
-        "risk_score": 0.20,
+        "risk_score": 0.2,
         "confidence": 0.72,
         "risk_band": "low",
-        "reasons": ["Elevated arterial bypass", "Direct storm sewer outfalls"],
-        "signals": {"terrain": 0.18, "flood_history": 0.12, "drainage": 0.18},
+        "reasons": [
+          "Elevated arterial bypass",
+          "Direct storm sewer outfalls"
+        ],
+        "signals": {
+          "terrain": 0.18,
+          "flood_history": 0.12,
+          "drainage": 0.18
+        },
         "length_m": 2100
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8580, 18.5018], [73.8680, 18.5110], [73.8780, 18.5220]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.858,
+            18.5018
+          ],
+          [
+            73.868,
+            18.511
+          ],
+          [
+            73.878,
+            18.522
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -296,13 +718,36 @@
         "name": "Alka Talkies Mutha Riverbank Road",
         "highway": "secondary",
         "risk_score": 0.68,
-        "confidence": 0.80,
+        "confidence": 0.8,
         "risk_band": "high",
-        "reasons": ["Mutha river backwater flooding", "Low elevation basin"],
-        "signals": {"terrain": 0.85, "flood_history": 0.88, "drainage": 0.72},
+        "reasons": [
+          "Mutha river backwater flooding",
+          "Low elevation basin"
+        ],
+        "signals": {
+          "terrain": 0.85,
+          "flood_history": 0.88,
+          "drainage": 0.72
+        },
         "length_m": 1200
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8402, 18.5168], [73.8475, 18.5147], [73.8504, 18.5132]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8402,
+            18.5168
+          ],
+          [
+            73.8475,
+            18.5147
+          ],
+          [
+            73.8504,
+            18.5132
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -313,11 +758,33 @@
         "risk_score": 0.16,
         "confidence": 0.72,
         "risk_band": "low",
-        "reasons": ["High ridge alignment away from railway culverts"],
-        "signals": {"terrain": 0.14, "flood_history": 0.08, "drainage": 0.12},
+        "reasons": [
+          "High ridge alignment away from railway culverts"
+        ],
+        "signals": {
+          "terrain": 0.14,
+          "flood_history": 0.08,
+          "drainage": 0.12
+        },
         "length_m": 1150
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8744, 18.5282], [73.8790, 18.5315], [73.8820, 18.5340]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.8744,
+            18.5282
+          ],
+          [
+            73.879,
+            18.5315
+          ],
+          [
+            73.882,
+            18.534
+          ]
+        ]
+      }
     },
     {
       "type": "Feature",
@@ -328,11 +795,406 @@
         "risk_score": 0.28,
         "confidence": 0.68,
         "risk_band": "low",
-        "reasons": ["Standard bridge approach"],
-        "signals": {"terrain": 0.25, "flood_history": 0.22, "drainage": 0.25},
+        "reasons": [
+          "Standard bridge approach"
+        ],
+        "signals": {
+          "terrain": 0.25,
+          "flood_history": 0.22,
+          "drainage": 0.25
+        },
         "length_m": 1250
       },
-      "geometry": {"type": "LineString", "coordinates": [[73.8820, 18.5340], [73.8850, 18.5420], [73.8913, 18.5375]]}
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.882,
+            18.534
+          ],
+          [
+            73.885,
+            18.542
+          ],
+          [
+            73.8913,
+            18.5375
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-023",
+        "name": "Hinjawadi Phase 1 IT Park Main Road",
+        "highway": "primary",
+        "risk_score": 0.55,
+        "confidence": 0.78,
+        "risk_band": "moderate",
+        "reasons": [
+          "Heavy monsoon runoff from Mula river tributary",
+          "High peak IT commuter traffic"
+        ],
+        "signals": {
+          "terrain": 0.45,
+          "flood_history": 0.6,
+          "drainage": 0.55
+        },
+        "length_m": 1400
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.738,
+            18.591
+          ],
+          [
+            73.744,
+            18.593
+          ],
+          [
+            73.751,
+            18.595
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-024",
+        "name": "Wakad Flyover & Dutta Mandir Corridor",
+        "highway": "primary",
+        "risk_score": 0.35,
+        "confidence": 0.7,
+        "risk_band": "moderate",
+        "reasons": [
+          "Highway junction storm-water collection"
+        ],
+        "signals": {
+          "terrain": 0.32,
+          "flood_history": 0.38,
+          "drainage": 0.35
+        },
+        "length_m": 1600
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.758,
+            18.598
+          ],
+          [
+            73.766,
+            18.6
+          ],
+          [
+            73.774,
+            18.599
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-025",
+        "name": "Baner High Street Corridor",
+        "highway": "primary",
+        "risk_score": 0.22,
+        "confidence": 0.75,
+        "risk_band": "low",
+        "reasons": [
+          "Elevated urban drainage channel"
+        ],
+        "signals": {
+          "terrain": 0.2,
+          "flood_history": 0.18,
+          "drainage": 0.24
+        },
+        "length_m": 1500
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.782,
+            18.556
+          ],
+          [
+            73.788,
+            18.559
+          ],
+          [
+            73.794,
+            18.563
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-026",
+        "name": "Aundh Parihar Chowk Link",
+        "highway": "secondary",
+        "risk_score": 0.28,
+        "confidence": 0.71,
+        "risk_band": "low",
+        "reasons": [
+          "Well-maintained storm culverts"
+        ],
+        "signals": {
+          "terrain": 0.25,
+          "flood_history": 0.26,
+          "drainage": 0.3
+        },
+        "length_m": 1300
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.805,
+            18.56
+          ],
+          [
+            73.811,
+            18.562
+          ],
+          [
+            73.817,
+            18.5635
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-027",
+        "name": "Kothrud Paud Road to Chandani Chowk",
+        "highway": "primary",
+        "risk_score": 0.42,
+        "confidence": 0.74,
+        "risk_band": "moderate",
+        "reasons": [
+          "Hill slope runoff from Chandani Chowk foothills"
+        ],
+        "signals": {
+          "terrain": 0.48,
+          "flood_history": 0.4,
+          "drainage": 0.42
+        },
+        "length_m": 1800
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.805,
+            18.508
+          ],
+          [
+            73.8,
+            18.506
+          ],
+          [
+            73.789,
+            18.502
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-028",
+        "name": "Katraj Chowk & Satara Road Corridor",
+        "highway": "primary",
+        "risk_score": 0.65,
+        "confidence": 0.81,
+        "risk_band": "high",
+        "reasons": [
+          "Katraj Lake overflow basin",
+          "Depression along old Satara highway"
+        ],
+        "signals": {
+          "terrain": 0.72,
+          "flood_history": 0.68,
+          "drainage": 0.6
+        },
+        "length_m": 1700
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.856,
+            18.455
+          ],
+          [
+            73.8575,
+            18.448
+          ],
+          [
+            73.859,
+            18.441
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-029",
+        "name": "Hadapsar Gadital & Magarpatta Main Road",
+        "highway": "primary",
+        "risk_score": 0.48,
+        "confidence": 0.73,
+        "risk_band": "moderate",
+        "reasons": [
+          "Canal proximity and heavy intersection surface water"
+        ],
+        "signals": {
+          "terrain": 0.44,
+          "flood_history": 0.52,
+          "drainage": 0.46
+        },
+        "length_m": 1600
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.923,
+            18.506
+          ],
+          [
+            73.928,
+            18.509
+          ],
+          [
+            73.935,
+            18.514
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-030",
+        "name": "Kharadi EON & World Trade Center Link",
+        "highway": "primary",
+        "risk_score": 0.38,
+        "confidence": 0.72,
+        "risk_band": "moderate",
+        "reasons": [
+          "Mula-Mutha river basin flat gradient"
+        ],
+        "signals": {
+          "terrain": 0.35,
+          "flood_history": 0.4,
+          "drainage": 0.38
+        },
+        "length_m": 1700
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.945,
+            18.551
+          ],
+          [
+            73.952,
+            18.554
+          ],
+          [
+            73.959,
+            18.558
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-031",
+        "name": "Viman Nagar Airport Road",
+        "highway": "primary",
+        "risk_score": 0.18,
+        "confidence": 0.79,
+        "risk_band": "low",
+        "reasons": [
+          "Elevated runway buffer drainage"
+        ],
+        "signals": {
+          "terrain": 0.15,
+          "flood_history": 0.16,
+          "drainage": 0.2
+        },
+        "length_m": 1400
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.91,
+            18.563
+          ],
+          [
+            73.9145,
+            18.568
+          ],
+          [
+            73.919,
+            18.572
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-032",
+        "name": "Pimpri-Chinchwad Old Mumbai-Pune Corridor",
+        "highway": "primary",
+        "risk_score": 0.52,
+        "confidence": 0.76,
+        "risk_band": "moderate",
+        "reasons": [
+          "Pawana river basin corridor",
+          "Underpass low clearance"
+        ],
+        "signals": {
+          "terrain": 0.55,
+          "flood_history": 0.52,
+          "drainage": 0.48
+        },
+        "length_m": 2100
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            73.792,
+            18.625
+          ],
+          [
+            73.801,
+            18.629
+          ],
+          [
+            73.811,
+            18.632
+          ]
+        ]
+      }
     }
   ]
 }

@@ -396,16 +396,19 @@ class RainStateStore:
         lons = [str(PUNE_GRID_POINTS[s][1]) for s in station_names]
 
         try:
-            async with httpx.AsyncClient(timeout=8) as client:
-                response = await client.get(
-                    "https://api.open-meteo.com/v1/forecast",
-                    params={
-                        "latitude": ",".join(lats),
-                        "longitude": ",".join(lons),
-                        "current": "precipitation",
-                        "minutely_15": "precipitation",
-                        "forecast_days": 1,
-                    },
+            async with httpx.AsyncClient(timeout=httpx.Timeout(2.0, connect=1.5)) as client:
+                response = await asyncio.wait_for(
+                    client.get(
+                        "https://api.open-meteo.com/v1/forecast",
+                        params={
+                            "latitude": ",".join(lats),
+                            "longitude": ",".join(lons),
+                            "current": "precipitation",
+                            "minutely_15": "precipitation",
+                            "forecast_days": 1,
+                        },
+                    ),
+                    timeout=2.0,
                 )
                 response.raise_for_status()
                 payload = response.json()

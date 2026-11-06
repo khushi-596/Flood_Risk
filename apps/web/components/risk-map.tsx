@@ -59,7 +59,10 @@ const bandLabel: Record<string, string> = {
 export function RiskMap({ roads, origin, destination, routes, onPointSelect, onSegmentSelect }: Props) {
   const [selectedRoad, setSelectedRoad] = useState<SegmentProperties | null>(null);
   const [popupPoint, setPopupPoint] = useState<MapPoint | null>(null);
-  const initialViewState = useMemo(() => ({ longitude: 73.865, latitude: 18.523, zoom: 12.4 }), []);
+  const initialViewState = useMemo(() => ({ longitude: 73.8567, latitude: 18.5204, zoom: 12.5 }), []);
+
+  const defaultMapStyle =
+    process.env.NEXT_PUBLIC_MAP_STYLE_URL || "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
 
   function handleClick(event: MapLayerMouseEvent) {
     const point = { longitude: event.lngLat.lng, latitude: event.lngLat.lat, label: "Map pin" };
@@ -73,11 +76,11 @@ export function RiskMap({ roads, origin, destination, routes, onPointSelect, onS
   }
 
   return (
-    <div className="h-[62vh] min-h-[460px] overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 shadow-sm">
+    <div className="h-[64vh] min-h-[480px] overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 shadow-sm">
       <Map
         initialViewState={initialViewState}
         interactiveLayerIds={[riskLineLayer.id]}
-        mapStyle={process.env.NEXT_PUBLIC_MAP_STYLE_URL ?? "https://demotiles.maplibre.org/style.json"}
+        mapStyle={defaultMapStyle}
         onClick={handleClick}
         style={{ height: "100%", width: "100%" }}
       >

@@ -16,8 +16,8 @@ WorkOrderStatus = Literal["open", "assigned", "in_progress", "resolved"]
 class CrowdReportCreate(BaseModel):
     report_type: ReportType
     severity: int = Field(ge=1, le=5, description="1 is minor and 5 is severe")
-    longitude: float = Field(ge=73.80, le=73.93, description="Longitude in the Pune demo zone")
-    latitude: float = Field(ge=18.48, le=18.60, description="Latitude in the Pune demo zone")
+    longitude: float = Field(ge=73.30, le=74.50, description="Longitude in the Pune demo zone")
+    latitude: float = Field(ge=18.10, le=19.10, description="Latitude in the Pune demo zone")
     description: str | None = Field(default=None, max_length=500)
     photo_path: str | None = Field(
         default=None,
@@ -95,8 +95,8 @@ class WeatherObservation(BaseModel):
 
 
 class Coordinate(BaseModel):
-    longitude: float = Field(ge=73.80, le=73.93)
-    latitude: float = Field(ge=18.48, le=18.60)
+    longitude: float = Field(ge=73.30, le=74.50)
+    latitude: float = Field(ge=18.10, le=19.10)
 
 
 class RouteRequest(BaseModel):

@@ -19,8 +19,25 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
   });
   if (!response.ok) {
-    const body = await response.json().catch(() => null) as { detail?: string } | null;
-    throw new Error(body?.detail ?? `Request failed (${response.status}).`);
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const body = (await response.json().catch(() => null)) as { detail?: any } | null;
+    let message = `Request failed (${response.status}).`;
+    if (typeof body?.detail === "string") {
+      message = body.detail;
+    } else if (Array.isArray(body?.detail)) {
+      message = body.detail
+        .map((e: any) => {
+          if (typeof e === "string") return e;
+          if (e?.msg) {
+            const loc = Array.isArray(e.loc) ? e.loc[e.loc.length - 1] : "";
+            return loc ? `${loc}: ${e.msg}` : e.msg;
+          }
+          return JSON.stringify(e);
+        })
+        .join("; ");
+    }
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+    throw new Error(message);
   }
   return response.json() as Promise<T>;
 }

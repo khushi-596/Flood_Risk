@@ -44,7 +44,8 @@ async def lifespan(_: FastAPI):
     configure_logging(settings.app_env)
     logger.info("flood_risk_api_starting", env=settings.app_env)
 
-    await rain_store.refresh_from_open_meteo()
+    with suppress(Exception):
+        await asyncio.wait_for(rain_store.refresh_from_open_meteo(), timeout=2.5)
     alert_task = asyncio.create_task(alert_hub.monitor())
     weather_task = asyncio.create_task(weather_poller_task())
     risk_task = asyncio.create_task(persist_segment_risk())
