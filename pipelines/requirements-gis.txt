@@ -1,0 +1,6 @@
+osmnx==2.0.0
+geopandas==1.0.1
+shapely==2.0.6
+rasterio==1.4.3
+pandas==2.2.3
+pyproj==3.7.0

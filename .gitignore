@@ -1,0 +1,38 @@
+# Environment and local state
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Python environments
+.venv/
+venv/
+
+# Node/Next.js
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+
+# Runtime data and model artifacts
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/cache/*
+!data/cache/.gitkeep
+models/artifacts/*
+!models/artifacts/.gitkeep
+uploads/*
+!uploads/.gitkeep
+
+# Editors and operating system files
+.DS_Store
+Thumbs.db
+.vscode/

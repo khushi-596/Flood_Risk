@@ -1,0 +1,76 @@
+{
+  "type": "FeatureCollection",
+  "name": "pune_day_1_demo_segments",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-001",
+        "name": "Jangli Maharaj Road",
+        "risk_score": 0.16,
+        "confidence": 0.62,
+        "risk_band": "low",
+        "reasons": ["Dry baseline conditions", "No verified active report"],
+        "signals": {"terrain": 0.12, "flood_history": 0.06, "drainage": 0.12},
+        "length_m": 690
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8446,18.5211],[73.8490,18.5200],[73.8531,18.5194]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-002",
+        "name": "Shivajinagar Station Road",
+        "risk_score": 0.47,
+        "confidence": 0.71,
+        "risk_band": "moderate",
+        "reasons": ["Historic waterlogging signal", "Near a drainage corridor"],
+        "signals": {"terrain": 0.42, "flood_history": 0.75, "drainage": 0.52},
+        "length_m": 600
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8476,18.5292],[73.8515,18.5274],[73.8556,18.5259]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-003",
+        "name": "Pune Station Underpass",
+        "risk_score": 0.83,
+        "confidence": 0.82,
+        "risk_band": "high",
+        "reasons": ["Low-lying underpass", "Historic flood hotspot", "Drainage is nearby"],
+        "signals": {"terrain": 0.95, "flood_history": 0.95, "drainage": 0.80},
+        "length_m": 550
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8668,18.5314],[73.8705,18.5291],[73.8744,18.5282]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-004",
+        "name": "Mula-Mutha River Approach",
+        "risk_score": 0.64,
+        "confidence": 0.68,
+        "risk_band": "high",
+        "reasons": ["Low elevation relative to surroundings", "Close to stream", "Known flood-prone area"],
+        "signals": {"terrain": 0.80, "flood_history": 0.82, "drainage": 0.70},
+        "length_m": 500
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8504,18.5132],[73.8538,18.5150],[73.8565,18.5169]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "segment_id": "pune-demo-005",
+        "name": "Koregaon Park Road",
+        "risk_score": 0.29,
+        "confidence": 0.58,
+        "risk_band": "low",
+        "reasons": ["Moderate slope", "No active crowd reports"],
+        "signals": {"terrain": 0.26, "flood_history": 0.20, "drainage": 0.30},
+        "length_m": 640
+      },
+      "geometry": {"type": "LineString", "coordinates": [[73.8913,18.5375],[73.8952,18.5359],[73.8990,18.5344]]}
+    }
+  ]
+}

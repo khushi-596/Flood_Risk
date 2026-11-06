@@ -1,0 +1,3 @@
+name,latitude,longitude,severity,source,notes
+Pune Station underpass demo,18.5282,73.8744,4,Demo seed,Validate against an official source before production
+Mula-Mutha river approach demo,18.5169,73.8565,3,Demo seed,Illustrative point for hackathon walk-through

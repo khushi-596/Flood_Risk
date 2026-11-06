@@ -1,0 +1,28 @@
+model:
+  name: explainable_weighted_flood_risk
+  version: 1.0.0
+  description: Day 1 transparent baseline. Inputs must each be normalised to 0..1.
+
+weights:
+  terrain: 0.28
+  rainfall: 0.27
+  flood_history: 0.20
+  drainage: 0.15
+  citizen_reports: 0.10
+
+bands:
+  low_max: 0.34
+  moderate_max: 0.59
+  high_max: 0.79
+  severe_max: 1.0
+
+defaults:
+  dry_day_rainfall_signal: 0.03
+  missing_signal: 0.0
+  confidence_without_observed_rainfall: 0.55
+  confidence_with_all_signals: 0.90
+
+guardrails:
+  # In dry conditions, avoid presenting an alarming score without strong evidence.
+  dry_day_score_cap_without_verified_report: 0.45
+  top_reason_count: 3

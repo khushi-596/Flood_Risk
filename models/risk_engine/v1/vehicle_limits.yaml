@@ -1,0 +1,17 @@
+vehicles:
+  two_wheeler:
+    caution_at: 0.30
+    wait_at: 0.48
+    avoid_at: 0.66
+  car:
+    caution_at: 0.42
+    wait_at: 0.62
+    avoid_at: 0.78
+  bus:
+    caution_at: 0.48
+    wait_at: 0.68
+    avoid_at: 0.82
+  truck:
+    caution_at: 0.52
+    wait_at: 0.72
+    avoid_at: 0.86
