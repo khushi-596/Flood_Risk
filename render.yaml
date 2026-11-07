@@ -55,6 +55,8 @@ services:
     dockerfilePath: ./apps/web/Dockerfile
     dockerContext: ./apps/web
     envVars:
+      - key: INTERNAL_API_URL
+        value: http://flood-risk-api:8000/v1
       - key: NEXT_PUBLIC_API_BASE_URL
         value: https://flood-risk-api.onrender.com/v1
       - key: NEXT_PUBLIC_MAP_STYLE_URL

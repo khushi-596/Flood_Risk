@@ -11,7 +11,10 @@ import type {
   WorkOrder,
 } from "@/lib/types";
 
-export const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/v1";
+export const apiBaseUrl =
+  typeof window !== "undefined"
+    ? "/api/backend"
+    : (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000/v1");
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${apiBaseUrl}${path}`, {

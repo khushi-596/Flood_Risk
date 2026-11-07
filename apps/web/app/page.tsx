@@ -125,6 +125,18 @@ export default function HomePage() {
                 <p className="mt-3 text-sm font-medium text-slate-600">
                   {error ?? "Loading Pune road-risk segments…"}
                 </p>
+                {error && (
+                  <button
+                    onClick={() => {
+                      setError(null);
+                      loadRoads();
+                    }}
+                    type="button"
+                    className="btn-primary mt-3 text-xs px-3.5 py-1.5 shadow-sm"
+                  >
+                    Retry Connection ↺
+                  </button>
+                )}
               </div>
             </div>
           )}
