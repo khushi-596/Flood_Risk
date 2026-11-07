@@ -3,13 +3,19 @@
 import { useState } from "react";
 import { simulateRain } from "@/lib/api";
 import type { RainLevel, RainState } from "@/lib/types";
+import { SunIcon, CloudDrizzleIcon, CloudRainIcon, CloudLightningIcon, WavesIcon, AlertTriangleIcon } from "@/components/icons";
 
-const levels: { value: RainLevel; label: string; emoji: string; description: string }[] = [
-  { value: "none", label: "None", emoji: "☀️", description: "0 mm/h" },
-  { value: "light", label: "Light", emoji: "🌦️", description: "~2 mm/h" },
-  { value: "medium", label: "Medium", emoji: "🌧️", description: "~8 mm/h" },
-  { value: "heavy", label: "Heavy", emoji: "⛈️", description: "~22 mm/h" },
-  { value: "extreme", label: "Extreme", emoji: "🌊", description: "~45 mm/h" },
+const levels: {
+  value: RainLevel;
+  label: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string; size?: number }>;
+}[] = [
+  { value: "none", label: "None", description: "0 mm/h", icon: SunIcon },
+  { value: "light", label: "Light", description: "~2 mm/h", icon: CloudDrizzleIcon },
+  { value: "medium", label: "Medium", description: "~8 mm/h", icon: CloudRainIcon },
+  { value: "heavy", label: "Heavy", description: "~22 mm/h", icon: CloudLightningIcon },
+  { value: "extreme", label: "Extreme", description: "~45 mm/h", icon: WavesIcon },
 ];
 
 const levelIndex: Record<RainLevel, number> = { none: 0, light: 1, medium: 2, heavy: 3, extreme: 4 };
@@ -39,17 +45,20 @@ export function RainControls({ rain, onChange }: Props) {
   const currentIdx = rain ? levelIndex[rain.level] ?? 0 : 0;
 
   return (
-    <div className="card p-5 animate-fade-in">
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="section-title">Rain Simulator</h2>
-        <span className="text-xs font-semibold text-slate-500">
+    <div className="frosted-card p-5 space-y-3.5">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-800">Rainfall Simulation</h2>
+          <p className="text-[11px] text-slate-500 mt-0.5">Test road passability under monsoon scenarios</p>
+        </div>
+        <span className="badge bg-sky-50 text-sky-800 border border-sky-200 px-2.5 py-1 text-xs font-bold">
           {rain ? `${rain.rainfall_mm_hour} mm/h` : "Loading…"}
         </span>
       </div>
 
       {/* Intensity bar */}
-      <div className="mt-3">
-        <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200">
+      <div className="space-y-1">
+        <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-100 border border-slate-200/80">
           <div
             className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
             style={{
@@ -61,47 +70,54 @@ export function RainControls({ rain, onChange }: Props) {
       </div>
 
       {/* Level buttons */}
-      <div className="mt-3 grid grid-cols-5 gap-1.5" role="radiogroup" aria-label="Set simulated rainfall">
+      <div className="grid grid-cols-5 gap-1.5" role="radiogroup" aria-label="Set simulated rainfall">
         {levels.map((level) => {
           const active = rain?.level === level.value;
+          const Icon = level.icon;
           return (
             <button
-              aria-checked={active}
-              className={`flex flex-col items-center gap-0.5 rounded-xl border px-1 py-2 text-center transition-all duration-200 ${
-                active
-                  ? "border-sky-300 bg-sky-50 text-sky-800 shadow-sm"
-                  : "border-transparent bg-slate-50 text-slate-600 hover:border-slate-200 hover:bg-white"
-              }`}
-              disabled={isSaving}
-              id={`rain-level-${level.value}`}
               key={level.value}
-              onClick={() => select(level.value)}
+              id={`rain-level-${level.value}`}
+              aria-checked={active}
               role="radio"
               type="button"
+              disabled={isSaving}
+              onClick={() => select(level.value)}
+              className={`flex flex-col items-center justify-center gap-1 rounded-xl border p-2 text-center transition-all ${
+                active
+                  ? "border-sky-500 bg-sky-50 text-sky-950 font-bold shadow-xs ring-2 ring-sky-500/15"
+                  : "border-slate-200/80 bg-white/70 text-slate-600 hover:border-slate-300 hover:bg-white"
+              }`}
             >
-              <span className="text-lg leading-none">{level.emoji}</span>
+              <Icon size={18} className={active ? "text-sky-700" : "text-slate-500"} />
               <span className="text-[11px] font-bold leading-tight">{level.label}</span>
+              <span className="text-[9px] text-slate-400">{level.description}</span>
             </button>
           );
         })}
       </div>
 
-      {/* Forecast */}
-      <div className="mt-3 flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
-        <span className="text-xs text-slate-500">+30 min forecast</span>
-        <span className="text-xs font-bold text-slate-700">
+      {/* Forecast & source row */}
+      <div className="flex items-center justify-between rounded-xl bg-slate-50/80 border border-slate-200/70 px-3 py-2 text-xs">
+        <span className="text-slate-600 font-medium">+30 Min Forecast:</span>
+        <span className="font-extrabold text-slate-800">
           {rain?.forecast_30m_mm_hour ?? 0} mm/h
         </span>
       </div>
 
       {rain?.source && (
-        <p className="mt-2 text-[11px] text-slate-400">
-          Source: <span className="font-semibold">{rain.source}</span>
-          {rain.is_stale && " (stale — live weather unavailable)"}
+        <p className="text-[11px] text-slate-400 text-center">
+          Weather data: <span className="font-semibold text-slate-600">{rain.source}</span>
+          {rain.is_stale && " (simulated fallback)"}
         </p>
       )}
 
-      {error && <p className="mt-2 text-xs font-medium text-rose-700">{error}</p>}
+      {error && (
+        <div className="rounded-xl bg-rose-50 border border-rose-200 p-2 text-xs font-semibold text-rose-800 flex items-center gap-1.5">
+          <AlertTriangleIcon size={13} className="text-rose-600 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
     </div>
   );
 }

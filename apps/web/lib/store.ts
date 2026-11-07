@@ -30,6 +30,13 @@ type AppState = {
   setDestination: (p: MapPoint | null) => void;
   setSelectionMode: (m: "origin" | "destination") => void;
   handlePointSelect: (p: MapPoint) => void;
+  swapOriginDestination: () => void;
+  clearOrigin: () => void;
+  clearDestination: () => void;
+
+  /* Route selection */
+  selectedRouteId: string | null;
+  setSelectedRouteId: (id: string | null) => void;
 
   /* Vehicle */
   vehicle: VehicleType;
@@ -92,6 +99,15 @@ export const useAppStore = create<AppState>()((set, get) => ({
       set({ destination: p, selectionMode: "origin" });
     }
   },
+  swapOriginDestination: () => {
+    const { origin, destination } = get();
+    set({ origin: destination, destination: origin, routeResult: null });
+  },
+  clearOrigin: () => set({ origin: null, routeResult: null, selectionMode: "origin" }),
+  clearDestination: () => set({ destination: null, routeResult: null, selectionMode: "destination" }),
+
+  selectedRouteId: null,
+  setSelectedRouteId: (id: string | null) => set({ selectedRouteId: id }),
 
   vehicle: "car" as VehicleType,
   setVehicle: (v: VehicleType) => set({ vehicle: v }),

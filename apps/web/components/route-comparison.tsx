@@ -2,43 +2,52 @@
 
 import { useState } from "react";
 import { compareRoutes } from "@/lib/api";
-import type { MapPoint, RouteComparison, RouteOption, VehicleType } from "@/lib/types";
+import { useAppStore } from "@/lib/store";
+import type { MapPoint, RouteComparison as RouteComparisonType, RouteOption, VehicleType } from "@/lib/types";
+import { MotorcycleIcon, CarIcon, BusIcon, TruckIcon, ShieldCheckIcon, AlertTriangleIcon, NavigationIcon } from "@/components/icons";
 
-const vehicles: { value: VehicleType; label: string; icon: string }[] = [
-  { value: "two_wheeler", label: "Two-wheeler", icon: "🏍️" },
-  { value: "car", label: "Car", icon: "🚗" },
-  { value: "bus", label: "Bus", icon: "🚌" },
-  { value: "truck", label: "Truck", icon: "🚛" },
+const vehicles: { value: VehicleType; label: string; icon: React.ComponentType<{ className?: string; size?: number }>; clearance: string }[] = [
+  { value: "two_wheeler", label: "2-Wheeler", icon: MotorcycleIcon, clearance: "15cm limit" },
+  { value: "car", label: "Car", icon: CarIcon, clearance: "30cm limit" },
+  { value: "bus", label: "Bus", icon: BusIcon, clearance: "60cm limit" },
+  { value: "truck", label: "Truck", icon: TruckIcon, clearance: "80cm limit" },
 ];
-
-const routeStyle: Record<RouteOption["id"], { bg: string; border: string; accent: string; dot: string }> = {
-  fast: { bg: "bg-rose-50", border: "border-rose-200", accent: "text-rose-700", dot: "bg-rose-500" },
-  safe: { bg: "bg-emerald-50", border: "border-emerald-200", accent: "text-emerald-700", dot: "bg-emerald-500" },
-  balanced: { bg: "bg-sky-50", border: "border-sky-200", accent: "text-sky-700", dot: "bg-sky-500" },
-};
 
 type Props = {
   origin: MapPoint | null;
   destination: MapPoint | null;
   vehicle: VehicleType;
   onVehicleChange: (vehicle: VehicleType) => void;
-  result: RouteComparison | null;
-  onResult: (result: RouteComparison) => void;
+  result: RouteComparisonType | null;
+  onResult: (result: RouteComparisonType) => void;
 };
 
-export function RouteComparison({ origin, destination, vehicle, onVehicleChange, result, onResult }: Props) {
+export function RouteComparison({
+  origin,
+  destination,
+  vehicle,
+  onVehicleChange,
+  result,
+  onResult,
+}: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const selectedRouteId = useAppStore((s) => s.selectedRouteId) as string | null;
+  const setSelectedRouteId = useAppStore((s) => s.setSelectedRouteId) as (id: string | null) => void;
+
   async function findRoutes() {
     if (!origin || !destination) {
-      setError("Select both A (start) and B (destination) on the map.");
+      setError("Please set both starting point and destination.");
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      onResult(await compareRoutes(origin, destination, vehicle));
+      const res = await compareRoutes(origin, destination, vehicle);
+      onResult(res);
+      const safeRoute = res.routes.find((r) => r.id === "safe") ?? res.routes[0];
+      if (safeRoute) setSelectedRouteId(safeRoute.id);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Could not compare routes.");
     } finally {
@@ -47,95 +56,121 @@ export function RouteComparison({ origin, destination, vehicle, onVehicleChange,
   }
 
   return (
-    <div className="card p-5 animate-fade-in">
+    <div className="frosted-card p-5 space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="section-title">Compare Routes</h2>
+        <div>
+          <h2 className="text-xs font-bold uppercase tracking-widest text-slate-800">Vehicle Selection</h2>
+          <p className="text-[11px] text-slate-500 mt-0.5">Choose transport type to calibrate flood clearance</p>
+        </div>
       </div>
 
       {/* Vehicle picker */}
-      <div className="mt-3 grid grid-cols-4 gap-1.5" role="radiogroup" aria-label="Select vehicle type">
-        {vehicles.map((v) => (
-          <button
-            aria-checked={vehicle === v.value}
-            className={`flex flex-col items-center gap-1 rounded-xl border px-2 py-2.5 text-xs font-semibold transition-all duration-200 ${
-              vehicle === v.value
-                ? "border-sky-300 bg-sky-50 text-sky-800 shadow-sm"
-                : "border-slate-200 bg-white text-slate-600 hover:border-sky-200 hover:bg-sky-50/50"
-            }`}
-            id={`vehicle-${v.value}`}
-            key={v.value}
-            onClick={() => onVehicleChange(v.value)}
-            role="radio"
-            type="button"
-          >
-            <span className="text-lg">{v.icon}</span>
-            <span className="leading-none">{v.label}</span>
-          </button>
-        ))}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2" role="radiogroup" aria-label="Select vehicle type">
+        {vehicles.map((v) => {
+          const isSelected = vehicle === v.value;
+          const Icon = v.icon;
+          return (
+            <button
+              key={v.value}
+              id={`vehicle-${v.value}`}
+              aria-checked={isSelected}
+              role="radio"
+              type="button"
+              onClick={() => onVehicleChange(v.value)}
+              className={`flex flex-col items-center justify-center rounded-xl border p-2.5 text-center transition-all ${
+                isSelected
+                  ? "border-sky-500 bg-sky-50 text-sky-950 font-bold shadow-xs ring-2 ring-sky-500/15"
+                  : "border-slate-200/90 bg-white/70 text-slate-600 hover:border-slate-300 hover:bg-white"
+              }`}
+            >
+              <Icon size={20} className={isSelected ? "text-sky-700" : "text-slate-500"} />
+              <span className="mt-1 text-xs font-bold">{v.label}</span>
+              <span className="text-[10px] text-slate-400">{v.clearance}</span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Origin/Destination status */}
-      <div className="mt-3 space-y-1.5">
-        <div className="flex items-center gap-2 text-xs">
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">A</span>
-          <span className={origin ? "font-medium text-slate-700" : "text-slate-400"}>
-            {origin ? origin.label : "Click map to set start"}
-          </span>
-        </div>
-        <div className="flex items-center gap-2 text-xs">
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-rose-600 text-[10px] font-bold text-white">B</span>
-          <span className={destination ? "font-medium text-slate-700" : "text-slate-400"}>
-            {destination ? destination.label : "Click map to set destination"}
-          </span>
-        </div>
-      </div>
-
+      {/* Calculate Button */}
       <button
-        className="btn-primary mt-4 w-full"
-        disabled={loading || !origin || !destination}
         id="compare-routes-btn"
-        onClick={findRoutes}
         type="button"
+        disabled={loading || !origin || !destination}
+        onClick={findRoutes}
+        className="btn-primary w-full py-2.5 text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
       >
         {loading ? (
-          <span className="animate-pulse-subtle">Comparing…</span>
+          <span>Analyzing Flood Risk…</span>
         ) : (
-          "Compare Fast, Safe & Balanced"
+          <>
+            <NavigationIcon size={14} />
+            <span>Compare Safe, Balanced &amp; Fast Routes</span>
+          </>
         )}
       </button>
 
-      {error && <p className="mt-2 text-xs font-medium text-rose-700">{error}</p>}
+      {error && (
+        <div className="rounded-xl bg-rose-50 border border-rose-200/80 p-2.5 text-xs text-rose-800 flex items-center gap-1.5">
+          <AlertTriangleIcon size={14} className="text-rose-600 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
 
+      {/* Route Results */}
       {result && (
-        <div className="mt-4 space-y-2.5 animate-slide-up">
-          {result.routes.map((route) => {
-            const style = routeStyle[route.id] ?? routeStyle.fast;
-            return (
-              <article
-                className={`rounded-xl border p-3.5 transition-all duration-200 ${style.bg} ${style.border}`}
-                key={route.id}
-                id={`route-card-${route.id}`}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className={`h-2.5 w-2.5 rounded-full ${style.dot}`} />
-                    <h3 className={`text-sm font-extrabold ${style.accent}`}>
-                      {route.label}
-                    </h3>
+        <div className="space-y-2.5 pt-2 border-t border-slate-200/60 animate-slide-up">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-600">
+              Computed Routes ({result.routes.length})
+            </h3>
+            <span className="text-[10px] text-slate-400">Tap to highlight on map</span>
+          </div>
+
+          <div className="space-y-2">
+            {result.routes.map((route) => {
+              const isSafe = route.id === "safe";
+              const isFast = route.id === "fast";
+              const isSelected = selectedRouteId === route.id;
+              const riskPercent = Math.round(route.average_risk * 100);
+
+              return (
+                <article
+                  key={route.id}
+                  id={`route-card-${route.id}`}
+                  onClick={() => setSelectedRouteId(route.id)}
+                  className={`cursor-pointer rounded-xl border p-3.5 transition-all ${
+                    isSafe ? "bg-emerald-50/70 border-emerald-200" : isFast ? "bg-rose-50/70 border-rose-200" : "bg-sky-50/70 border-sky-200"
+                  } ${isSelected ? "ring-2 ring-sky-500 shadow-md" : ""}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      {isSafe && <ShieldCheckIcon size={14} className="text-emerald-700" />}
+                      {isFast && <AlertTriangleIcon size={14} className="text-rose-700" />}
+                      <h4 className="text-xs font-bold text-slate-900">{route.label}</h4>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded border ${
+                        isSafe ? "bg-emerald-100 text-emerald-800 border-emerald-200" : isFast ? "bg-rose-100 text-rose-800 border-rose-200" : "bg-sky-100 text-sky-800 border-sky-200"
+                      }`}>
+                        {isSafe ? "Safest Route" : isFast ? "Fastest Route" : "Balanced"}
+                      </span>
+                    </div>
+
+                    <span className="text-xs font-black text-slate-900">{riskPercent}% Risk</span>
                   </div>
-                  <span className={`text-lg font-black ${style.accent}`}>
-                    {Math.round(route.average_risk * 100)}%
-                  </span>
-                </div>
-                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600">
-                  <span>{(route.distance_m / 1000).toFixed(1)} km</span>
-                  <span>{route.duration_min} min</span>
-                  <span>{route.risky_segment_count} risky road{route.risky_segment_count !== 1 ? "s" : ""}</span>
-                </div>
-                <p className="mt-2 text-xs leading-relaxed text-slate-500">{route.recommendation}</p>
-              </article>
-            );
-          })}
+
+                  <div className="mt-2 flex items-center justify-between text-xs text-slate-600">
+                    <span>{(route.distance_m / 1000).toFixed(1)} km • {route.duration_min} min</span>
+                    <span className="font-semibold text-slate-700">
+                      {route.risky_segment_count === 0 ? "0 hazard roads" : `${route.risky_segment_count} hazard roads`}
+                    </span>
+                  </div>
+
+                  <p className="mt-2 text-xs leading-relaxed text-slate-600 bg-white/70 rounded-lg p-2 border border-slate-200/50">
+                    {route.recommendation}
+                  </p>
+                </article>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

@@ -45,19 +45,40 @@ export function PlaceSearch({ onPlaceSelect, placeholder = "Search any location 
       if (!response.ok) throw new Error("Search service temporary error.");
       let places = (await response.json()) as NominatimResult[];
       
+      // Fast local search check
+      const localPunes = [
+        { name: "Kothrud", lat: "18.5074", lon: "73.8077" },
+        { name: "Hinjawadi", lat: "18.5913", lon: "73.7389" },
+        { name: "Pune Railway Station", lat: "18.5284", lon: "73.8739" },
+        { name: "Shivajinagar", lat: "18.5314", lon: "73.8446" },
+        { name: "Swargate", lat: "18.5018", lon: "73.8586" },
+        { name: "Baner", lat: "18.5590", lon: "73.7868" },
+        { name: "Viman Nagar", lat: "18.5679", lon: "73.9143" },
+        { name: "Hadapsar", lat: "18.5089", lon: "73.9260" },
+        { name: "Aundh", lat: "18.5602", lon: "73.8062" },
+      ].filter((p) => p.name.toLowerCase().includes(trimmedQuery.toLowerCase()));
+
       // Fallback search if zero results
       if (places.length === 0) {
-        const fallbackUrl = new URL("https://nominatim.openstreetmap.org/search");
-        fallbackUrl.search = new URLSearchParams({
-          q: `${trimmedQuery}, Pune`,
-          format: "jsonv2",
-          limit: "6",
-        }).toString();
-        const fallbackRes = await fetch(fallbackUrl.toString(), {
-          headers: { Accept: "application/json", "User-Agent": "FloodRiskPune/1.0" },
-        });
-        if (fallbackRes.ok) {
-          places = (await fallbackRes.json()) as NominatimResult[];
+        if (localPunes.length > 0) {
+          places = localPunes.map((p) => ({
+            display_name: `${p.name}, Pune, Maharashtra, India`,
+            lat: p.lat,
+            lon: p.lon,
+          }));
+        } else {
+          const fallbackUrl = new URL("https://nominatim.openstreetmap.org/search");
+          fallbackUrl.search = new URLSearchParams({
+            q: `${trimmedQuery}, Pune`,
+            format: "jsonv2",
+            limit: "6",
+          }).toString();
+          const fallbackRes = await fetch(fallbackUrl.toString(), {
+            headers: { Accept: "application/json", "User-Agent": "FloodRiskPune/1.0" },
+          });
+          if (fallbackRes.ok) {
+            places = (await fallbackRes.json()) as NominatimResult[];
+          }
         }
       }
 

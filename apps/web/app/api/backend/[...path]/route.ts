@@ -3,10 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 const TARGETS = [
   process.env.INTERNAL_API_URL,
   process.env.NEXT_PUBLIC_API_BASE_URL,
-  "http://flood-risk-api:8000/v1",
-  "http://flood-risk-api:10000/v1",
   "http://127.0.0.1:8000/v1",
   "http://localhost:8000/v1",
+  "http://flood-risk-api:8000/v1",
+  "http://flood-risk-api:10000/v1",
+  "https://flood-risk-api-yuhz.onrender.com/v1",
+  "https://flood-risk-api.onrender.com/v1",
 ].filter(Boolean) as string[];
 
 async function forward(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {

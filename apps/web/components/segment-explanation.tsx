@@ -197,16 +197,16 @@ export function SegmentExplanationPanel({ segmentId, onClose }: Props) {
             {/* Reasons */}
             <div>
               <h4 className="mb-2 text-xs font-bold uppercase tracking-widest text-slate-500">
-                Top Reasons
+                Top Contributing Factors
               </h4>
               <ul className="space-y-1.5">
                 {data.reasons.map((reason, i) => (
                   <li
                     key={i}
-                    className="flex items-start gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700"
+                    className="flex items-start gap-2 rounded-xl bg-slate-50 border border-slate-200/60 px-3 py-2 text-xs text-slate-700"
                   >
-                    <span className="mt-0.5 text-amber-500">⚠</span>
-                    {reason}
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500 mt-1.5 shrink-0" />
+                    <span>{reason}</span>
                   </li>
                 ))}
               </ul>

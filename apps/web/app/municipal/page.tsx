@@ -13,6 +13,17 @@ import {
 } from "@/lib/api";
 import { useAppStore } from "@/lib/store";
 import type { CrowdReport, WorkOrder } from "@/lib/types";
+import {
+  ClipboardIcon,
+  WaterDropIcon,
+  WavesIcon,
+  PotholeIcon,
+  HazardDrainIcon,
+  DownloadIcon,
+  CheckIcon,
+  CloseIcon,
+  PlusIcon,
+} from "@/components/icons";
 
 type Tab = "reports" | "work-orders" | "hotspots";
 
@@ -27,9 +38,22 @@ const statusBadge: Record<string, string> = {
 };
 
 const severityColors = ["", "#10b981", "#22d3ee", "#f59e0b", "#f97316", "#ef4444"];
-const typeEmoji: Record<string, string> = {
-  waterlogging: "💧", flood: "🌊", pothole: "🕳️", blocked_drain: "🚧", other: "📋",
-};
+
+function getReportIcon(type: string) {
+  switch (type) {
+    case "waterlogging":
+      return <WaterDropIcon className="w-5 h-5 text-sky-600" />;
+    case "flood":
+      return <WavesIcon className="w-5 h-5 text-blue-600" />;
+    case "pothole":
+      return <PotholeIcon className="w-5 h-5 text-amber-600" />;
+    case "blocked_drain":
+      return <HazardDrainIcon className="w-5 h-5 text-rose-600" />;
+    default:
+      return <ClipboardIcon className="w-5 h-5 text-slate-600" />;
+  }
+}
+
 
 export default function MunicipalDashboardPage() {
   const router = useRouter();
@@ -166,17 +190,25 @@ export default function MunicipalDashboardPage() {
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      {/* Luxury Aquatic Blue Glassmorphism Header */}
+      <div className="luxury-glass-blue water-droplets-pattern rounded-3xl p-6 sm:p-7 text-white border border-sky-400/20 shadow-xl flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="section-title">Municipal Staff Dashboard</p>
-          <h1 className="page-title mt-1">Flood Risk Management</h1>
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-sky-300">
+            Municipal Control Center
+          </p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mt-1">
+            Flood Risk &amp; Hazard Management
+          </h1>
+          <p className="text-xs text-sky-100/80 mt-1 max-w-xl">
+            Live queue of citizen reports, severity verification, and road maintenance work order dispatch.
+          </p>
         </div>
-        <div className="flex gap-2">
-          <button className="btn-secondary text-xs" id="csv-export-btn" onClick={handleCsvExport} type="button">
-            📥 Export CSV
+        <div className="flex gap-2.5">
+          <button className="luxury-glass-pill text-xs flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-white font-bold" id="csv-export-btn" onClick={handleCsvExport} type="button">
+            <DownloadIcon className="w-3.5 h-3.5 text-sky-300" />
+            <span>Export CSV</span>
           </button>
-          <button className="btn-secondary text-xs" id="municipal-logout-btn" onClick={logout} type="button">
+          <button className="rounded-xl bg-white/10 border border-white/20 text-xs px-3.5 py-2 text-white font-bold hover:bg-white/20 transition" id="municipal-logout-btn" onClick={logout} type="button">
             Logout
           </button>
         </div>
@@ -224,8 +256,8 @@ export default function MunicipalDashboardPage() {
             <article key={report.id} className="card p-4" id={`municipal-report-${report.id}`}>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-xl">
-                    {typeEmoji[report.report_type] ?? "📋"}
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100">
+                    {getReportIcon(report.report_type)}
                   </span>
                   <div>
                     <h3 className="text-sm font-bold capitalize text-slate-900">
@@ -259,22 +291,24 @@ export default function MunicipalDashboardPage() {
               {report.status === "pending" && (
                 <div className="mt-3 flex gap-2 pl-[52px]">
                   <button
-                    className="btn-safe py-1.5 text-xs"
+                    className="btn-safe py-1.5 text-xs flex items-center gap-1.5"
                     disabled={reviewing === report.id}
                     id={`verify-report-${report.id}`}
                     onClick={() => handleReview(report.id, "verified")}
                     type="button"
                   >
-                    ✓ Verify
+                    <CheckIcon className="w-3.5 h-3.5" />
+                    <span>Verify</span>
                   </button>
                   <button
-                    className="btn-danger py-1.5 text-xs"
+                    className="btn-danger py-1.5 text-xs flex items-center gap-1.5"
                     disabled={reviewing === report.id}
                     id={`reject-report-${report.id}`}
                     onClick={() => handleReview(report.id, "rejected")}
                     type="button"
                   >
-                    ✕ Reject
+                    <CloseIcon className="w-3.5 h-3.5" />
+                    <span>Reject</span>
                   </button>
                 </div>
               )}
@@ -291,12 +325,13 @@ export default function MunicipalDashboardPage() {
               {workOrders.length} work order{workOrders.length !== 1 ? "s" : ""}
             </h2>
             <button
-              className="btn-primary py-1.5 text-xs"
+              className="btn-primary py-1.5 text-xs flex items-center gap-1.5"
               id="create-work-order-btn"
               onClick={() => setShowWoForm(!showWoForm)}
               type="button"
             >
-              + Create Work Order
+              <PlusIcon className="w-3.5 h-3.5" />
+              <span>Create Work Order</span>
             </button>
           </div>
 

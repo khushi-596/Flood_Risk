@@ -2,15 +2,15 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { PlaceSearch } from "@/components/place-search";
 import { RainControls } from "@/components/rain-controls";
 import { RiskLegend } from "@/components/risk-legend";
 import { RiskMap } from "@/components/risk-map";
-import { RouteComparison } from "@/components/route-comparison";
+import { RouteAddressInputs } from "@/components/route-address-inputs";
 import { SegmentExplanationPanel } from "@/components/segment-explanation";
 import { TravelAdviceCard } from "@/components/travel-advice-card";
 import { getRainState, getRoadSegments } from "@/lib/api";
 import { useAppStore } from "@/lib/store";
+import { WaterDropIcon, MapPinIcon } from "@/components/icons";
 import type { MapPoint, RainState, RoadCollection, RouteComparison as RouteComparisonType, VehicleType } from "@/lib/types";
 
 export default function HomePage() {
@@ -22,13 +22,11 @@ export default function HomePage() {
   const selectionMode = useAppStore((s) => s.selectionMode) as "origin" | "destination";
   const handlePointSelect = useAppStore((s) => s.handlePointSelect) as (p: MapPoint) => void;
   const vehicle = useAppStore((s) => s.vehicle) as VehicleType;
-  const setVehicle = useAppStore((s) => s.setVehicle) as (v: VehicleType) => void;
   const rain = useAppStore((s) => s.rain) as RainState | null;
   const setRain = useAppStore((s) => s.setRain) as (r: RainState) => void;
   const refreshKey = useAppStore((s) => s.refreshKey) as number;
   const triggerRefresh = useAppStore((s) => s.triggerRefresh) as () => void;
   const routeResult = useAppStore((s) => s.routeResult) as RouteComparisonType | null;
-  const setRouteResult = useAppStore((s) => s.setRouteResult) as (r: RouteComparisonType | null) => void;
   const selectedSegmentId = useAppStore((s) => s.selectedSegmentId) as string | null;
   const setSelectedSegmentId = useAppStore((s) => s.setSelectedSegmentId) as (id: string | null) => void;
 
@@ -70,90 +68,53 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen">
-      {/* Hero header */}
-      <header className="relative overflow-hidden" style={{ background: "var(--gradient-hero)" }}>
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/20 blur-3xl" />
-          <div className="absolute -bottom-10 left-1/4 h-48 w-48 rounded-full bg-sky-300/30 blur-3xl" />
-        </div>
-        <div className="relative mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-5 sm:px-6">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-sky-200">
-              Pune Flood-Aware Navigation
+    <main className="min-h-screen bg-slate-50/70 pb-12">
+      {/* Luxury Aquatic Blue Glassmorphism Header */}
+      <header className="relative overflow-hidden luxury-glass-blue water-droplets-pattern text-white">
+        <div className="relative mx-auto flex max-w-7xl flex-col gap-5 px-5 py-6 sm:px-6 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-1.5">
+            <p className="text-[10px] uppercase font-bold tracking-[0.25em] text-sky-300">
+              Metropolitan Flood Risk &amp; Autonomous Transit
             </p>
-            <h1 className="mt-1 text-xl font-extrabold text-white sm:text-2xl">
-              FloodAware Route &amp; Risk Engine
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white drop-shadow-sm">
+              FloodAware <span className="font-light text-sky-200">Pune</span>
             </h1>
-            <p className="mt-1 max-w-xl text-sm text-sky-100/80">
-              Roads scored by terrain, drainage, rainfall, flood history &amp; citizen reports.
-              Choose a safer road — not only a faster one.
+            <p className="max-w-2xl text-xs text-sky-100/80 leading-relaxed font-normal">
+              Continuous road elevation, precipitation rate, and crowdsourced hazard monitoring across Greater Pune.
             </p>
           </div>
-          <div className="hidden items-center gap-2 sm:flex">
-            <span className="rounded-full bg-white/15 px-3 py-1.5 text-xs font-bold text-white backdrop-blur">
-              {selectionMode === "origin" ? "📍 Set Start (A)" : "📍 Set Destination (B)"}
-            </span>
+
+          {/* Quick status pills */}
+          <div className="flex flex-wrap items-center gap-2.5 text-xs">
+            <div className="luxury-glass-pill flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-white">
+              <WaterDropIcon size={16} className="text-sky-300" />
+              <div>
+                <p className="text-[10px] uppercase font-bold tracking-wider text-sky-300/80">Precipitation</p>
+                <p className="text-xs font-black text-white">
+                  {rain ? `${rain.rainfall_mm_hour} mm/h` : "0 mm/h"}
+                </p>
+              </div>
+            </div>
+
+            <div className="luxury-glass-pill flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-white">
+              <MapPinIcon size={16} className="text-sky-300" />
+              <div>
+                <p className="text-[10px] uppercase font-bold tracking-wider text-sky-300/80">Map Click Mode</p>
+                <p className="text-xs font-black text-white">
+                  {selectionMode === "origin" ? "Start Point (A)" : "Destination (B)"}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
+      {/* Main Cohesive Cockpit (Zero Negative Space) */}
       <section className="mx-auto max-w-7xl px-4 py-5 sm:px-6">
-        {/* Map + search */}
-        <div className="relative">
-          <div className="absolute left-3 right-3 top-3 z-10 sm:left-5 sm:right-auto">
-            <PlaceSearch onPlaceSelect={handlePointSelect} />
-          </div>
-          {roads ? (
-            <RiskMap
-              roads={roads}
-              origin={origin}
-              destination={destination}
-              routes={routeResult?.routes ?? []}
-              onPointSelect={handlePointSelect}
-              onSegmentSelect={onSegmentSelect}
-            />
-          ) : (
-            <div
-              className="flex h-[62vh] min-h-[460px] items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm"
-              role="status"
-            >
-              <div>
-                <div className="mx-auto h-10 w-10 animate-pulse-subtle rounded-full bg-sky-100 p-2.5">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0369a1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" /></svg>
-                </div>
-                <p className="mt-3 text-sm font-medium text-slate-600">
-                  {error ?? "Loading Pune road-risk segments…"}
-                </p>
-                {error && (
-                  <button
-                    onClick={() => {
-                      setError(null);
-                      loadRoads();
-                    }}
-                    type="button"
-                    className="btn-primary mt-3 text-xs px-3.5 py-1.5 shadow-sm"
-                  >
-                    Retry Connection ↺
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Controls grid */}
-        <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_340px]">
-          {/* Left column */}
-          <div className="space-y-5">
-            <RouteComparison
-              origin={origin}
-              destination={destination}
-              vehicle={vehicle}
-              onVehicleChange={setVehicle}
-              result={routeResult}
-              onResult={setRouteResult}
-            />
+        <div className="grid gap-5 lg:grid-cols-[430px_1fr] items-start">
+          {/* Left Column: Unified Route Console & Segment Details */}
+          <div className="space-y-4">
+            <RouteAddressInputs />
 
             {selectedSegmentId && (
               <SegmentExplanationPanel
@@ -163,16 +124,66 @@ export default function HomePage() {
             )}
           </div>
 
-          {/* Right column */}
-          <div className="space-y-5">
-            <TravelAdviceCard
-              vehicle={vehicle}
-              origin={origin}
-              destination={destination}
-              refreshKey={refreshKey}
-            />
-            <RainControls rain={rain} onChange={handleRainChange} />
-            <RiskLegend />
+          {/* Right Column: Interactive Map + Intelligence Grid */}
+          <div className="space-y-4 min-w-0">
+            {/* Map Container */}
+            <div className="relative">
+              {roads ? (
+                <RiskMap
+                  roads={roads}
+                  origin={origin}
+                  destination={destination}
+                  routes={routeResult?.routes ?? []}
+                  onPointSelect={handlePointSelect}
+                  onSegmentSelect={onSegmentSelect}
+                />
+              ) : (
+                <div
+                  className="flex h-[58vh] min-h-[460px] items-center justify-center rounded-3xl border border-slate-200 bg-white/80 backdrop-blur-xl p-6 text-center shadow-card"
+                  role="status"
+                >
+                  <div className="space-y-3">
+                    <div className="mx-auto h-10 w-10 animate-pulse rounded-2xl bg-sky-100 flex items-center justify-center">
+                      <span className="h-4 w-4 border-2 border-sky-700 border-t-transparent rounded-full animate-spin" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-800">
+                        {error ?? "Loading Pune flood risk road grid…"}
+                      </p>
+                      <p className="text-xs text-slate-500 mt-1">
+                        Analyzing 400+ road segments with live elevation &amp; rainfall scores
+                      </p>
+                    </div>
+                    {error && (
+                      <button
+                        onClick={() => {
+                          setError(null);
+                          loadRoads();
+                        }}
+                        type="button"
+                        className="btn-primary text-xs px-4 py-2 shadow-sm"
+                      >
+                        Retry Connection
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Intelligence Grid: Symmetrical 3-card frosted row under map */}
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <TravelAdviceCard
+                vehicle={vehicle}
+                origin={origin}
+                destination={destination}
+                refreshKey={refreshKey}
+              />
+              <RainControls rain={rain} onChange={handleRainChange} />
+              <div className="sm:col-span-2 lg:col-span-1">
+                <RiskLegend />
+              </div>
+            </div>
           </div>
         </div>
       </section>
