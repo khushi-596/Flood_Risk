@@ -31,7 +31,7 @@ services:
       - key: APP_ENV
         value: production
       - key: CORS_ORIGINS
-        value: https://flood-risk-web.onrender.com,https://flood-risk-api.onrender.com,http://localhost:3000
+        value: https://flood-risk-web.onrender.com,https://flood-risk-api-yuhz.onrender.com,https://flood-risk-api.onrender.com,http://localhost:3000
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_ALGORITHM
@@ -56,8 +56,8 @@ services:
     dockerContext: ./apps/web
     envVars:
       - key: INTERNAL_API_URL
-        value: http://flood-risk-api:8000/v1
+        value: https://flood-risk-api-yuhz.onrender.com/v1
       - key: NEXT_PUBLIC_API_BASE_URL
-        value: https://flood-risk-api.onrender.com/v1
+        value: https://flood-risk-api-yuhz.onrender.com/v1
       - key: NEXT_PUBLIC_MAP_STYLE_URL
         value: https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json
