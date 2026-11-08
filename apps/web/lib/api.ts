@@ -9,6 +9,7 @@ import type {
   TravelAdvice,
   VehicleType,
   WorkOrder,
+  EmergencyFacility,
 } from "@/lib/types";
 
 export const apiBaseUrl =
@@ -61,11 +62,64 @@ export function getSegmentExplanation(segmentId: string): Promise<SegmentExplana
   return request<SegmentExplanation>(`/segments/${encodeURIComponent(segmentId)}/explanation`, { cache: "no-store" });
 }
 
-export function compareRoutes(origin: MapPoint, destination: MapPoint, vehicle: VehicleType): Promise<RouteComparison> {
-  return request<RouteComparison>("/routes/compare", {
+export async function compareRoutes(origin: MapPoint, destination: MapPoint, vehicle: VehicleType): Promise<RouteComparison> {
+  const result = await request<RouteComparison>("/routes/compare", {
     method: "POST",
     body: JSON.stringify({ origin, destination, vehicle }),
   });
+
+  // Client-side safety: ensure every route follows actual road coordinates (never straight line)
+  const hasStraightLine = result.routes.some((r) => (r.geometry?.coordinates?.length ?? 0) < 4);
+  if (hasStraightLine) {
+    try {
+      const profile = vehicle === "two_wheeler" ? "driving" : "driving";
+      const osrmUrl = `https://router.project-osrm.org/route/v1/${profile}/${origin.longitude},${origin.latitude};${destination.longitude},${destination.latitude}?overview=full&geometries=geojson&steps=true`;
+      const res = await fetch(osrmUrl);
+      if (res.ok) {
+        /* eslint-disable @typescript-eslint/no-explicit-any */
+        const osrmData = (await res.json()) as any;
+        if (osrmData.routes && osrmData.routes[0]) {
+          const roadGeom = osrmData.routes[0].geometry;
+          const roadDist = Math.round(osrmData.routes[0].distance);
+          const roadDur = Math.max(1, Math.round(osrmData.routes[0].duration / 60));
+          const steps: any[] = [];
+          for (const leg of osrmData.routes[0].legs || []) {
+            for (const st of leg.steps || []) {
+              const mType = st.maneuver?.type || "turn";
+              const modifier = st.maneuver?.modifier || "";
+              const name = st.name || "road";
+              let instruction = `${mType} onto ${name}`;
+              if (mType === "depart") instruction = `Head toward ${name}`;
+              else if (mType === "arrive") instruction = "Arrive at destination";
+              else if (modifier) instruction = `Turn ${modifier} onto ${name}`;
+              steps.push({
+                instruction,
+                name,
+                distance_m: Math.round(st.distance),
+                duration_sec: Math.round(st.duration),
+                maneuver_type: mType,
+              });
+            }
+          }
+          for (const route of result.routes) {
+            if ((route.geometry?.coordinates?.length ?? 0) < 4) {
+              route.geometry = roadGeom;
+              route.distance_m = roadDist;
+              route.duration_min = roadDur;
+              if (!route.steps || route.steps.length === 0) {
+                route.steps = steps;
+              }
+            }
+          }
+        }
+        /* eslint-enable @typescript-eslint/no-explicit-any */
+      }
+    } catch (e) {
+      console.warn("Client OSRM fallback error:", e);
+    }
+  }
+
+  return result;
 }
 
 export function getTravelAdvice(vehicle: VehicleType, origin?: MapPoint | null, destination?: MapPoint | null): Promise<TravelAdvice> {
@@ -117,3 +171,16 @@ export function createWorkOrder(token: string, payload: { segment_id: string; ti
 export function updateWorkOrder(token: string, id: string, status: WorkOrder["status"]): Promise<WorkOrder> {
   return request<WorkOrder>(`/municipal/work-orders/${id}`, { method: "PATCH", headers: auth(token), body: JSON.stringify({ status }) });
 }
+
+export async function getEmergencyFacilities(type?: "hospital" | "shelter"): Promise<EmergencyFacility[]> {
+  const query = type ? `?facility_type=${type}` : "";
+  try {
+    return await request<EmergencyFacility[]>(`/emergency/facilities${query}`, { cache: "no-store" });
+  } catch {
+    const res = await fetch("/emergency_facilities.json");
+    const data = (await res.json()) as EmergencyFacility[];
+    if (type) return data.filter((f) => f.type === type);
+    return data;
+  }
+}
+

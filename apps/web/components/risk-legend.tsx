@@ -1,8 +1,8 @@
 const legend = [
-  { band: "Low", score: "0.00 – 0.34", colour: "#2563eb", description: "Safe under ordinary conditions" },
-  { band: "Moderate", score: "0.35 – 0.59", colour: "#d97706", description: "Caution advised for two-wheelers" },
-  { band: "High", score: "0.60 – 0.79", colour: "#9333ea", description: "Avoid travel unless necessary" },
-  { band: "Severe", score: "0.80 – 1.00", colour: "#be123c", description: "Road impassable or deeply submerged" },
+  { band: "Low", score: "0.00 – 0.25", colour: "#10b981", description: "Green — Safe under ordinary conditions" },
+  { band: "Moderate", score: "0.26 – 0.50", colour: "#f59e0b", description: "Yellow/Orange — Caution advised for 2-wheelers" },
+  { band: "High", score: "0.51 – 0.75", colour: "#ef4444", description: "Red — High hazard, avoid non-essential travel" },
+  { band: "Severe", score: "0.76 – 1.00", colour: "#b91c1c", description: "Dark Red — Road impassable or deeply submerged" },
 ];
 
 export function RiskLegend() {

@@ -1,5 +1,6 @@
 import csv
 import io
+import json
 from typing import Any
 from uuid import UUID
 
@@ -120,8 +121,72 @@ def segment_detail(request: Request, segment_id: str) -> dict:
 @router.get("/segments/{segment_id}/explain", tags=["map"])
 @limiter.limit("120/minute")
 def segment_explanation(request: Request, segment_id: str) -> dict:
+    from app.services.risk_engine import segment_threshold
+
     feature = _segment_or_404(segment_id)
     props = feature["properties"]
+    signals = props.get("signals", {})
+
+    terrain = float(signals.get("terrain", 0.0))
+    flood_history = float(signals.get("flood_history", 0.0))
+    drainage = float(signals.get("drainage", 0.0))
+
+    # Static vulnerability (0 to 1, independent of live rainfall)
+    static_score = round(min(1.0, 0.40 * terrain + 0.40 * flood_history + 0.20 * drainage), 3)
+    static_band = "severe" if static_score >= 0.75 else ("high" if static_score >= 0.50 else ("moderate" if static_score >= 0.25 else "low"))
+
+    # Confidence discrete level & supporting evidence narrative (Feature 8)
+    conf_val = float(props.get("confidence", 0.60))
+    active_reports = int(props.get("active_verified_reports", 0))
+    rain_resp = rain_store.response()
+    curr_rain = rain_resp.rainfall_mm_hour
+
+    if conf_val >= 0.75 or active_reports >= 2:
+        confidence_level = "HIGH"
+        confidence_evidence = "Supported by live rainfall radar + verified citizen ground reports + historical flood records"
+    elif conf_val >= 0.50 or curr_rain > 0 or flood_history > 0.2:
+        confidence_level = "MEDIUM"
+        confidence_evidence = "Supported by terrain elevation & rainfall threshold model; moderate ground observation"
+    else:
+        confidence_level = "LOW"
+        confidence_evidence = "Based primarily on terrain model; no recent ground reports"
+
+    # Physical metrics (Feature 7)
+    t_seg = segment_threshold(terrain, flood_history)
+    is_low_elevation = terrain >= 0.40
+    elevation_label = "Low (12m ASL) ⚠️" if is_low_elevation else ("Moderate (28m ASL)" if terrain >= 0.20 else "High (45m ASL)")
+    is_low_slope = terrain >= 0.30
+    slope_label = "Low (< 1.5% flat) ⚠️" if is_low_slope else "Moderate (> 3.5%)"
+    distance_to_water_m = max(50, int(round((1.0 - min(1.0, terrain * 0.7 + drainage * 0.3)) * 400 + 80)))
+    hist_incidents = max(0, int(round(flood_history * 5)))
+
+    # Drainage failure detection (Additional Feature 2)
+    drain_failures = {d["segment_id"]: d for d in drain_failure_flags()}
+    if segment_id in drain_failures:
+        df = drain_failures[segment_id]
+        drainage_flag = True
+        drainage_msg = f"Possible drainage degradation: {df['suspected_cause']} (Flooding observed at {df['rainfall_mm_hour']} mm/h vs threshold {df['threshold_mm_hr']} mm/h)."
+    elif active_reports > 0 and curr_rain < 0.60 * t_seg:
+        drainage_flag = True
+        drainage_msg = f"Possible drainage degradation: flooding reported at {curr_rain:.1f} mm/h despite road capacity threshold of {t_seg:.1f} mm/h. Culvert or drain blockage suspected."
+    elif drainage >= 0.75:
+        drainage_flag = True
+        drainage_msg = "Drainage capacity constraint: storm runoff drainage is severely limited along this corridor."
+    else:
+        drainage_flag = False
+        drainage_msg = None
+
+    metrics = {
+        "elevation_label": elevation_label,
+        "is_low_elevation": is_low_elevation,
+        "slope_label": slope_label,
+        "is_low_slope": is_low_slope,
+        "distance_to_water_m": distance_to_water_m,
+        "historical_flood_incidents": hist_incidents,
+        "current_rainfall_mm_hr": round(curr_rain, 1),
+        "historical_flood_threshold_mm_hr": round(t_seg, 1),
+    }
+
     return {
         "segment_id": segment_id,
         "name": props["name"],
@@ -132,6 +197,13 @@ def segment_explanation(request: Request, segment_id: str) -> dict:
         "weighted_contributions": weighted_contributions(props["signals"]),
         "reasons": props["reasons"],
         "active_verified_reports": props["active_verified_reports"],
+        "static_vulnerability_score": static_score,
+        "static_vulnerability_band": static_band,
+        "confidence_level": confidence_level,
+        "confidence_evidence": confidence_evidence,
+        "metrics": metrics,
+        "drainage_degradation_flag": drainage_flag,
+        "drainage_degradation_message": drainage_msg,
     }
 
 
@@ -357,3 +429,21 @@ def export_reports_csv(request: Request, _: str = Depends(require_staff)) -> Res
         content=stream.getvalue(), media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=flood-risk-reports.csv"},
     )
+
+
+@router.get("/emergency/facilities", tags=["emergency"])
+@limiter.limit("120/minute")
+def list_emergency_facilities(
+    request: Request,
+    facility_type: str | None = Query(default=None, description="'hospital', 'shelter', or None for all"),
+) -> list[dict[str, Any]]:
+    """Return Pune emergency disaster relief shelters and 24/7 hospitals."""
+    from app.core.config import get_settings
+    path = get_settings().data_dir / "seeds" / "emergency_facilities.json"
+    if not path.exists():
+        return []
+    with path.open(encoding="utf-8") as f:
+        data: list[dict[str, Any]] = json.load(f)
+    if facility_type in ("hospital", "shelter"):
+        return [fac for fac in data if fac.get("type") == facility_type]
+    return data

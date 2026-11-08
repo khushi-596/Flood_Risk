@@ -28,6 +28,8 @@ class Settings:
     jwt_algorithm: str
     municipal_demo_email: str
     municipal_demo_password: str
+    # OSRM routing server — override with a self-hosted instance for production
+    osrm_url: str = "http://router.project-osrm.org"
 
 
 @lru_cache
@@ -61,4 +63,5 @@ def get_settings() -> Settings:
         jwt_algorithm=os.getenv("JWT_ALGORITHM", "HS256"),
         municipal_demo_email=os.getenv("MUNICIPAL_DEMO_EMAIL", "staff@pune.gov.in"),
         municipal_demo_password=os.getenv("MUNICIPAL_DEMO_PASSWORD", "change-before-deployment"),
+        osrm_url=os.getenv("OSRM_URL", "http://router.project-osrm.org"),
     )

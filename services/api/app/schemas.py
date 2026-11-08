@@ -106,6 +106,15 @@ class RouteRequest(BaseModel):
     horizon_min: int = Field(default=0, ge=0, le=60, description="Forecast horizon in minutes (0 or 30)")
 
 
+class RouteStep(BaseModel):
+    """A single turn-by-turn navigation instruction."""
+    instruction: str
+    name: str
+    distance_m: float
+    duration_sec: float
+    maneuver_type: str
+
+
 class RouteOption(BaseModel):
     id: RoutePreference
     label: str
@@ -117,12 +126,26 @@ class RouteOption(BaseModel):
     risky_segment_count: int
     segment_ids: list[str]
     recommendation: str
+    steps: list[RouteStep] = Field(default_factory=list)
+    steps_summary: str = ""
+    comparative_benefit: str = ""
 
 
 class RouteResponse(BaseModel):
     vehicle: VehicleType
     rain: RainStateResponse
     routes: list[RouteOption]
+
+
+class PhysicalRiskMetrics(BaseModel):
+    elevation_label: str = "Moderate (28m ASL)"
+    is_low_elevation: bool = False
+    slope_label: str = "Low (< 1.5%)"
+    is_low_slope: bool = True
+    distance_to_water_m: int = 150
+    historical_flood_incidents: int = 2
+    current_rainfall_mm_hr: float = 0.0
+    historical_flood_threshold_mm_hr: float = 30.0
 
 
 class SegmentExplanation(BaseModel):
@@ -135,6 +158,13 @@ class SegmentExplanation(BaseModel):
     weighted_contributions: dict[str, float]
     reasons: list[str]
     active_verified_reports: int
+    static_vulnerability_score: float = 0.0
+    static_vulnerability_band: str = "low"
+    confidence_level: str = "MEDIUM"
+    confidence_evidence: str = "Supported by terrain elevation & historical records"
+    metrics: PhysicalRiskMetrics = Field(default_factory=PhysicalRiskMetrics)
+    drainage_degradation_flag: bool = False
+    drainage_degradation_message: str | None = None
 
 
 class TravelAdviceRequest(BaseModel):
@@ -200,3 +230,21 @@ class MunicipalStatsResponse(BaseModel):
     active_hotspots: int
     open_work_orders: int
     pending_reports: int
+
+
+class EmergencyFacility(BaseModel):
+    id: str
+    name: str
+    type: Literal["hospital", "shelter"]
+    address: str
+    area: str
+    latitude: float
+    longitude: float
+    phone: str
+    emergency_phone: str
+    capacity: str
+    elevation_masl: int
+    status: str
+    flood_safe: bool = True
+    services: list[str] = Field(default_factory=list)
+

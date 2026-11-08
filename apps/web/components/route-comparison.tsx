@@ -164,6 +164,13 @@ export function RouteComparison({
                     </span>
                   </div>
 
+                  {route.comparative_benefit && (
+                    <div className="mt-2 rounded-lg bg-white/80 border border-slate-200/80 p-2 text-xs font-semibold text-slate-800 flex items-start gap-1.5 shadow-2xs">
+                      <span className="text-xs shrink-0 mt-0.5">💡</span>
+                      <span className="leading-snug">{route.comparative_benefit}</span>
+                    </div>
+                  )}
+
                   <p className="mt-2 text-xs leading-relaxed text-slate-600 bg-white/70 rounded-lg p-2 border border-slate-200/50">
                     {route.recommendation}
                   </p>

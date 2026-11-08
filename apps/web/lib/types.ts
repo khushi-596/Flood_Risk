@@ -32,6 +32,14 @@ export type RainState = {
   updated_at: string;
 };
 
+export type RouteStep = {
+  instruction: string;
+  name: string;
+  distance_m: number;
+  duration_sec: number;
+  maneuver_type: string;
+};
+
 export type RouteOption = {
   id: "fast" | "safe" | "balanced";
   label: string;
@@ -43,12 +51,26 @@ export type RouteOption = {
   risky_segment_count: number;
   segment_ids: string[];
   recommendation: string;
+  steps: RouteStep[];
+  steps_summary: string;
+  comparative_benefit?: string;
 };
 
 export type RouteComparison = {
   vehicle: VehicleType;
   rain: RainState;
   routes: RouteOption[];
+};
+
+export type PhysicalRiskMetrics = {
+  elevation_label: string;
+  is_low_elevation: boolean;
+  slope_label: string;
+  is_low_slope: boolean;
+  distance_to_water_m: number;
+  historical_flood_incidents: number;
+  current_rainfall_mm_hr: number;
+  historical_flood_threshold_mm_hr: number;
 };
 
 export type SegmentExplanation = {
@@ -61,6 +83,13 @@ export type SegmentExplanation = {
   weighted_contributions: Record<string, number>;
   reasons: string[];
   active_verified_reports: number;
+  static_vulnerability_score: number;
+  static_vulnerability_band: string;
+  confidence_level: "HIGH" | "MEDIUM" | "LOW";
+  confidence_evidence: string;
+  metrics: PhysicalRiskMetrics;
+  drainage_degradation_flag: boolean;
+  drainage_degradation_message?: string | null;
 };
 
 export type TravelAdvice = {
@@ -97,4 +126,21 @@ export type WorkOrder = {
   assigned_to?: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type EmergencyFacility = {
+  id: string;
+  name: string;
+  type: "hospital" | "shelter";
+  address: string;
+  area: string;
+  latitude: number;
+  longitude: number;
+  phone: string;
+  emergency_phone: string;
+  capacity: string;
+  elevation_masl: number;
+  status: string;
+  flood_safe: boolean;
+  services: string[];
 };

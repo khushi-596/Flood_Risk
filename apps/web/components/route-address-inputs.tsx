@@ -74,6 +74,8 @@ export function RouteAddressInputs() {
   const [locatingGps, setLocatingGps] = useState(false);
   const [calculatingRoute, setCalculatingRoute] = useState(false);
   const [routeError, setRouteError] = useState<string | null>(null);
+  // Track open/closed state of turn-by-turn steps panels per route id
+  const [stepsOpenMap, setStepsOpenMap] = useState<Record<string, boolean>>({});
 
   const sourceDropdownRef = useRef<HTMLDivElement>(null);
   const destDropdownRef = useRef<HTMLDivElement>(null);
@@ -635,42 +637,106 @@ export function RouteAddressInputs() {
                     bar: "bg-sky-500",
                   };
 
+              const hasSteps = route.steps && route.steps.length > 0;
+              const stepsOpen = stepsOpenMap[route.id] ?? false;
+              const toggleSteps = (e: React.MouseEvent) => {
+                e.stopPropagation();
+                setStepsOpenMap((prev) => ({ ...prev, [route.id]: !prev[route.id] }));
+              };
+
               return (
                 <div
                   key={route.id}
-                  onClick={() => setSelectedRouteId(route.id)}
-                  className={`cursor-pointer rounded-xl border p-3 transition-all ${theme.bg} ${theme.border} ${
+                  className={`rounded-xl border transition-all ${theme.bg} ${theme.border} ${
                     isSelected ? "ring-2 ring-sky-500 shadow-sm" : ""
                   }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5">
-                      {isSafe && <ShieldCheckIcon size={14} className="text-emerald-700" />}
-                      {isFast && <AlertTriangleIcon size={14} className="text-rose-700" />}
-                      <span className={`text-xs font-bold ${theme.accent}`}>{route.label}</span>
-                      <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded border ${theme.badge}`}>
-                        {theme.label}
+                  {/* Route header — clicking selects & highlights on map */}
+                  <div
+                    className="cursor-pointer p-3"
+                    onClick={() => setSelectedRouteId(route.id)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        {isSafe && <ShieldCheckIcon size={14} className="text-emerald-700" />}
+                        {isFast && <AlertTriangleIcon size={14} className="text-rose-700" />}
+                        <span className={`text-xs font-bold ${theme.accent}`}>{route.label}</span>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded border ${theme.badge}`}>
+                          {theme.label}
+                        </span>
+                      </div>
+                      <span className={`text-sm font-black ${theme.accent}`}>{riskPercent}% Risk</span>
+                    </div>
+
+                    {/* Risk Progress Bar */}
+                    <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-200/80">
+                      <div className={`h-full rounded-full ${theme.bar}`} style={{ width: `${Math.max(4, riskPercent)}%` }} />
+                    </div>
+
+                    {/* Metrics */}
+                    <div className="mt-2 flex items-center justify-between text-[11px] text-slate-600">
+                      <span>{(route.distance_m / 1000).toFixed(1)} km • {route.duration_min} min</span>
+                      <span className="font-semibold text-slate-700">
+                        {route.risky_segment_count === 0 ? "0 hazard roads" : `${route.risky_segment_count} hazard roads`}
                       </span>
                     </div>
-                    <span className={`text-sm font-black ${theme.accent}`}>{riskPercent}% Risk</span>
+
+                    {/* Road path summary */}
+                    {route.steps_summary && (
+                      <p className="mt-1.5 text-[10px] text-slate-500 font-medium truncate">
+                        📍 {route.steps_summary}
+                      </p>
+                    )}
+
+                    {/* Comparative Advantage / Why choose this road (Feature 1) */}
+                    {route.comparative_benefit && (
+                      <div className="mt-2 rounded-lg bg-white/80 border border-slate-200/80 p-2 text-[11px] font-semibold text-slate-800 flex items-start gap-1.5 shadow-2xs">
+                        <span className="text-xs shrink-0 mt-0.5">💡</span>
+                        <span className="leading-snug">{route.comparative_benefit}</span>
+                      </div>
+                    )}
+
+                    <p className="mt-1.5 text-[11px] text-slate-600 bg-white/70 rounded-lg p-2 border border-slate-200/50 leading-relaxed">
+                      {route.recommendation}
+                    </p>
                   </div>
 
-                  {/* Risk Progress Bar */}
-                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-200/80">
-                    <div className={`h-full rounded-full ${theme.bar}`} style={{ width: `${Math.max(4, riskPercent)}%` }} />
-                  </div>
+                  {/* Turn-by-turn directions toggle */}
+                  {hasSteps && (
+                    <div className="border-t border-current/10 px-3 pb-2.5">
+                      <button
+                        type="button"
+                        onClick={toggleSteps}
+                        className="mt-2 flex w-full items-center justify-between text-[11px] font-semibold text-slate-600 hover:text-slate-900 transition"
+                      >
+                        <span>🗺 {route.steps.length - 1} turn{route.steps.length !== 2 ? "s" : ""} · Directions</span>
+                        <span className="text-slate-400">{stepsOpen ? "▲ Hide" : "▼ Show"}</span>
+                      </button>
 
-                  {/* Metrics */}
-                  <div className="mt-2 flex items-center justify-between text-[11px] text-slate-600">
-                    <span>{(route.distance_m / 1000).toFixed(1)} km • {route.duration_min} min</span>
-                    <span className="font-semibold text-slate-700">
-                      {route.risky_segment_count === 0 ? "0 hazard roads" : `${route.risky_segment_count} hazard roads`}
-                    </span>
-                  </div>
-
-                  <p className="mt-1.5 text-[11px] text-slate-600 bg-white/70 rounded-lg p-2 border border-slate-200/50 leading-relaxed">
-                    {route.recommendation}
-                  </p>
+                      {stepsOpen && (
+                        <ol className="mt-2 space-y-1.5 max-h-52 overflow-y-auto pr-0.5">
+                          {route.steps.map((step, idx) => (
+                            <li key={idx} className="flex items-start gap-2 text-[11px]">
+                              <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[9px] font-black text-slate-700">
+                                {step.maneuver_type === "arrive" ? "🏁" : idx + 1}
+                              </span>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-slate-800 font-medium leading-snug">{step.instruction}</p>
+                                {step.distance_m > 0 && (
+                                  <p className="text-[10px] text-slate-400 mt-0.5">
+                                    {step.distance_m < 1000
+                                      ? `${Math.round(step.distance_m)} m`
+                                      : `${(step.distance_m / 1000).toFixed(1)} km`}
+                                    {step.duration_sec > 0 && ` · ~${Math.ceil(step.duration_sec / 60)} min`}
+                                  </p>
+                                )}
+                              </div>
+                            </li>
+                          ))}
+                        </ol>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
